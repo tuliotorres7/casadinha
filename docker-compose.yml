@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: casadinha-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: casadinha
+      POSTGRES_PASSWORD: casadinha123
+      POSTGRES_DB: casadinha_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - casadinha-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: casadinha-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@casadinha.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - casadinha-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  casadinha-network:
+    driver: bridge

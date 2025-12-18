@@ -1,0 +1,56 @@
+<div class="home-container">
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <h1>🎲 Casadinha</h1>
+      </div>
+      <div class="user-info" *ngIf="user">
+        <div class="coins">
+          <span class="coin-icon">🪙</span>
+          <span class="coin-amount">{{ user.coins }}</span>
+        </div>
+        <img [src]="user.picture" [alt]="user.name" class="user-avatar">
+        <span class="user-name">{{ user.name }}</span>
+        <button class="logout-btn" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="welcome-section">
+      <h2>Bem-vindo, {{ user?.name }}! 🎉</h2>
+      <p class="welcome-message">
+        Você tem <strong>{{ user?.coins }} moedas</strong> para se divertir com apostas!
+      </p>
+    </div>
+
+    <div class="content-area">
+      <div class="placeholder-card">
+        <div class="placeholder-icon">🎮</div>
+        <h3>Em Breve!</h3>
+        <p>Estamos preparando jogos incríveis para você se divertir com apostas amigáveis.</p>
+        <p class="sub-text">Fique ligado para novidades!</p>
+      </div>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-icon">🎯</div>
+          <h4>Apostas Divertidas</h4>
+          <p>Faça suas apostas e teste sua sorte sem gastar dinheiro real!</p>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-icon">🏆</div>
+          <h4>Ganhe Moedas</h4>
+          <p>Acumule moedas virtuais e suba no ranking dos melhores apostadores!</p>
+        </div>
+        
+        <div class="info-card">
+          <div class="card-icon">👥</div>
+          <h4>Jogue com Amigos</h4>
+          <p>Convide seus amigos e divirtam-se juntos nas apostas!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

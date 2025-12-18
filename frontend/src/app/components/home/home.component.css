@@ -1,0 +1,206 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+}
+
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h1 {
+  font-size: 1.8em;
+  color: #667eea;
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coins {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.coin-icon {
+  font-size: 1.3em;
+}
+
+.coin-amount {
+  font-size: 1.1em;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #667eea;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.logout-btn {
+  padding: 8px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.welcome-section {
+  text-align: center;
+  color: white;
+  margin-bottom: 50px;
+}
+
+.welcome-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 15px;
+}
+
+.welcome-message {
+  font-size: 1.3em;
+  opacity: 0.95;
+}
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.placeholder-card {
+  background: white;
+  border-radius: 20px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.placeholder-icon {
+  font-size: 5em;
+  margin-bottom: 20px;
+}
+
+.placeholder-card h3 {
+  font-size: 2.5em;
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.placeholder-card p {
+  font-size: 1.2em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.sub-text {
+  font-style: italic;
+  color: #999;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+.info-card h4 {
+  font-size: 1.5em;
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.info-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .nav-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .user-info {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .welcome-section h2 {
+    font-size: 2em;
+  }
+
+  .placeholder-card {
+    padding: 40px 20px;
+  }
+}
