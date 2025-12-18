@@ -50,7 +50,7 @@
               "optimization": false,
               "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
+              "sourceMap": false,
               "namedChunks": true
             }
           },
@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "casadinha-frontend:build:production"
+              "browserTarget": "casadinha-frontend:build:production"
             },
             "development": {
-              "buildTarget": "casadinha-frontend:build:development"
+              "browserTarget": "casadinha-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -94,5 +94,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "efc83dfc-bb07-4886-9c2a-7aeaa4245fcd"
   }
 }

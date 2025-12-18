@@ -28,4 +28,11 @@ export class UsersService {
   async updateCoins(userId: number, coins: number): Promise<void> {
     await this.userModel.update({ coins }, { where: { id: userId } });
   }
+
+  async findAll(): Promise<User[]> {
+    return this.userModel.findAll({
+      attributes: ['id', 'email', 'name', 'picture', 'coins'],
+      order: [['name', 'ASC']],
+    });
+  }
 }

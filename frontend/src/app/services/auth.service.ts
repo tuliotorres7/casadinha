@@ -66,4 +66,11 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
+
+  getAllUsers(): Observable<User[]> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.get<User[]>(`${this.apiUrl}/users`, { headers });
+  }
 }

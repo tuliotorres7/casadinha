@@ -1,0 +1,48 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+export interface Bet {
+  id: number;
+  description: string;
+  amount: number;
+  status: string;
+  creatorId: number;
+  opponentId: number;
+  winnerId?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateBetDto {
+  description: string;
+  friendEmail: string;
+  amount: number;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class BetsService {
+  private apiUrl = `${environment.apiUrl}/bets`;
+
+  constructor(private http: HttpClient) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  createBet(betData: CreateBetDto): Observable<Bet> {
+    return this.http.post<Bet>(this.apiUrl, betData, { headers: this.getHeaders() });
+  }
+
+  getUserBets(): Observable<Bet[]> {
+    return this.http.get<Bet[]>(this.apiUrl, { headers: this.getHeaders() });
+  }
+
+  getBetById(id: number): Observable<Bet> {
+    return this.http.get<Bet>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+}

@@ -32,11 +32,16 @@
         <p class="sub-text">Fique ligado para novidades!</p>
       </div>
 
+      <div class="actions">
+        <button class="btn-primary" (click)="createBet()">Criar Aposta</button>
+        <button class="btn-secondary">Minhas Apostas</button>
+      </div>
+
       <div class="info-cards">
         <div class="info-card">
           <div class="card-icon">🎯</div>
-          <h4>Apostas Divertidas</h4>
-          <p>Faça suas apostas e teste sua sorte sem gastar dinheiro real!</p>
+          <h4>Criar Aposta</h4>
+          <p>Crie sua aposta, quem é a mula que vai pagar seu lanche ?</p>
         </div>
         
         <div class="info-card">
@@ -45,7 +50,7 @@
           <p>Acumule moedas virtuais e suba no ranking dos melhores apostadores!</p>
         </div>
         
-        <div class="info-card">
+        <div class="info-card" (click)="viewUsers()" style="cursor: pointer;">
           <div class="card-icon">👥</div>
           <h4>Jogue com Amigos</h4>
           <p>Convide seus amigos e divirtam-se juntos nas apostas!</p>

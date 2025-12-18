@@ -25,4 +25,12 @@ export class HomeComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  createBet(): void {
+    this.router.navigate(['/create-bet']);
+  }
+
+  viewUsers(): void {
+    this.router.navigate(['/users']);
+  }
 }
