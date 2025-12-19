@@ -2,10 +2,12 @@ import { Table, Column, Model, DataType, CreatedAt, UpdatedAt, ForeignKey, Belon
 import { User } from '../users/user.model';
 
 export enum BetStatus {
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
-  COMPLETED = 'completed',
+  PENDING = 0,
+  CHANGE_AVALIADOR = 1,
+  ACCEPTED = 2,
+  REJECTED = 3,
+  COMPLETED = 4,
+  REJECTED_BY_AVALIADOR = 5,
 }
 
 @Table({
@@ -33,7 +35,7 @@ export class Bet extends Model {
   amount: number;
 
   @Column({
-    type: DataType.ENUM(...Object.values(BetStatus)),
+    type: DataType.INTEGER,
     defaultValue: BetStatus.PENDING,
   })
   status: BetStatus;
@@ -71,7 +73,7 @@ export class Bet extends Model {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
+    allowNull: true,
     defaultValue: 1,
   })
   avaliadorId: number;

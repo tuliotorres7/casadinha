@@ -46,31 +46,31 @@
   <main class="main-content">
     <div class="bets-section" *ngIf="!loading">
       <div class="stats-cards">
-        <div class="stat-card">
+        <div class="stat-card" (click)="filterByStatus(null)" [class.active]="activeFilter === null">
           <div class="stat-icon">📊</div>
           <div class="stat-info">
             <span class="stat-label">Total de Apostas</span>
             <span class="stat-value">{{ bets.length }}</span>
           </div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" (click)="filterByStatus(0)" [class.active]="activeFilter === 0">
           <div class="stat-icon">⏳</div>
           <div class="stat-info">
             <span class="stat-label">Pendentes</span>
-            <span class="stat-value">{{ (bets | filter: 'status': 'pending').length }}</span>
+            <span class="stat-value">{{ (bets | filter: 'status': 0).length }}</span>
           </div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" (click)="filterByStatus(2)" [class.active]="activeFilter === 2">
           <div class="stat-icon">✅</div>
           <div class="stat-info">
             <span class="stat-label">Aceitas</span>
-            <span class="stat-value">{{ (bets | filter: 'status': 'accepted').length }}</span>
+            <span class="stat-value">{{ (bets | filter: 'status': 2).length }}</span>
           </div>
         </div>
       </div>
 
-      <div class="bets-list" *ngIf="bets.length > 0">
-        <div class="bet-card" *ngFor="let bet of bets">
+      <div class="bets-list" *ngIf="filteredBets.length > 0">
+        <div class="bet-card" *ngFor="let bet of filteredBets">
           <div class="bet-header">
             <span class="bet-role" [class.creator]="isCreator(bet)" [class.opponent]="!isCreator(bet)">
               {{ isCreator(bet) ? 'Você criou' : 'Desafiado por' }}
@@ -120,7 +120,7 @@
             </div>
 
             <!-- Mostrar vencedor se a aposta foi finalizada -->
-            <div class="winner-section" *ngIf="bet.status === 'completed' && bet.winner">
+            <div class="winner-section" *ngIf="bet.status === 4 && bet.winner">
               <div class="winner-banner" [class.you-won]="isWinner(bet)" [class.you-lost]="!isWinner(bet)">
                 <span class="winner-icon">{{ isWinner(bet) ? '🏆' : '😢' }}</span>
                 <div class="winner-info">
@@ -132,11 +132,18 @@
             </div>
           </div>
 
-          <div class="bet-actions" *ngIf="bet.status === 'pending' && !isCreator(bet)">
+          <div class="bet-actions" *ngIf="bet.status === 0 && !isCreator(bet)">
             <button class="btn-accept" (click)="acceptBet(bet.id)">Achei um besta pra pagar minha netflix</button>
             <button class="btn-reject" (click)="rejectBet(bet.id)">Nao achei meu dinheiro no lixo</button>
           </div>
         </div>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredBets.length === 0 && bets.length > 0">
+        <div class="empty-icon">🔍</div>
+        <h3>Nenhuma aposta com este status</h3>
+        <p>Tente filtrar por outro status ou veja todas as apostas.</p>
+        <button class="btn-secondary" (click)="filterByStatus(null)">Ver Todas</button>
       </div>
 
       <div class="empty-state" *ngIf="bets.length === 0">

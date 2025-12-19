@@ -37,7 +37,7 @@ export class BetsService {
         }
 
         if (opponent.id === creatorId) {
-            //throw new BadRequestException('Você não pode apostar consigo mesmo');
+            throw new BadRequestException('Você não pode apostar consigo mesmo');
         }
 
         // Definir o avaliador (padrão é ID 1 - o laranja)
@@ -61,26 +61,37 @@ export class BetsService {
     }
 
     async findUserBets(userId: number): Promise<Bet[]> {
-        return this.betModel.findAll({
+        const bets = await this.betModel.findAll({
             where: {
                 [Symbol.for('or')]: [{ creatorId: userId }, { opponentId: userId }],
             },
             include: [
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
-                { model: User, as: 'avaliador' },
+                { model: User, as: 'avaliador', required: false },
                 { model: User, as: 'winner' },
             ],
             order: [['createdAt', 'DESC']],
         });
+
+        // Carregar avaliador padrão (ID 1) para apostas sem avaliador
+        const defaultAvaliador = await this.userModel.findByPk(1);
+        
+        return bets.map(bet => {
+            if (!bet.avaliador && defaultAvaliador) {
+                bet.avaliador = defaultAvaliador;
+            }
+            return bet;
+        });
     }
+
     async findBetById(id: number): Promise<Bet> {
         const bet = await this.betModel.findByPk(id, {
             include: [
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
                 { model: User, as: 'winner' },
-                { model: User, as: 'avaliador' },
+                { model: User, as: 'avaliador', required: false },
             ],
         });
 
@@ -88,21 +99,40 @@ export class BetsService {
             throw new NotFoundException('Aposta não encontrada');
         }
 
+        // Carregar avaliador padrão (ID 1) se não houver avaliador
+        if (!bet.avaliador) {
+            const defaultAvaliador = await this.userModel.findByPk(1);
+            if (defaultAvaliador) {
+                bet.avaliador = defaultAvaliador;
+            }
+        }
+
         return bet;
     }
 
     async findBetsAsAvaliador(avaliadorId: number): Promise<Bet[]> {
-        return this.betModel.findAll({
+        const bets = await this.betModel.findAll({
             where: {
                 avaliadorId,
+                status: BetStatus.ACCEPTED,
             },
             include: [
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
-                { model: User, as: 'avaliador' },
+                { model: User, as: 'avaliador', required: false },
                 { model: User, as: 'winner' },
             ],
             order: [['createdAt', 'DESC']],
+        });
+
+        // Carregar avaliador padrão (ID 1) para apostas sem avaliador
+        const defaultAvaliador = await this.userModel.findByPk(1);
+        
+        return bets.map(bet => {
+            if (!bet.avaliador && defaultAvaliador) {
+                bet.avaliador = defaultAvaliador;
+            }
+            return bet;
         });
     }
 
@@ -114,9 +144,9 @@ export class BetsService {
             throw new BadRequestException('Apenas o avaliador pode declarar o vencedor');
         }
 
-        // Verificar se a aposta está pendente
-        if (bet.status !== BetStatus.PENDING) {
-            throw new BadRequestException('Apenas apostas pendentes podem ter um vencedor declarado');
+        // Verificar se a aposta está aceita
+        if (bet.status !== BetStatus.ACCEPTED) {
+            throw new BadRequestException('Apenas apostas aceitas podem ter um vencedor declarado');
         }
 
         // Verificar se já tem vencedor
@@ -228,7 +258,7 @@ export class BetsService {
             throw new BadRequestException('Não é possível recusar apostas já finalizadas');
         }
 
-        if (bet.status === BetStatus.REJECTED) {
+        if (bet.status === BetStatus.REJECTED || bet.status === BetStatus.REJECTED_BY_AVALIADOR) {
             throw new BadRequestException('Esta aposta já foi rejeitada');
         }
 
@@ -250,8 +280,8 @@ export class BetsService {
             await opponent.save();
         }
 
-        // Rejeitar a aposta (mantém o avaliador registrado)
-        bet.status = BetStatus.REJECTED;
+        // Rejeitar a aposta pelo avaliador
+        bet.status = BetStatus.REJECTED_BY_AVALIADOR;
         await bet.save();
 
         return this.findBetById(betId);

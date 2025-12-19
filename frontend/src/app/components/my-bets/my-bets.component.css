@@ -156,8 +156,23 @@
   transition: transform 0.3s ease;
 }
 
+.stat-card {
+  cursor: pointer;
+}
+
 .stat-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+.stat-card.active {
+  border: 2px solid #667eea;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+  transform: translateY(-3px);
+}
+
+.stat-card.active .stat-value {
+  color: #5568d3;
 }
 
 .stat-icon {
@@ -234,6 +249,11 @@
 }
 
 .status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-change-avaliador {
   background: #fef3c7;
   color: #d97706;
 }

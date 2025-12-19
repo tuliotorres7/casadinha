@@ -39,7 +39,8 @@ export class CreateBetComponent implements OnInit {
     const betData = {
       description: this.betDescription,
       friendEmail: this.friendEmail,
-      amount: this.betAmount
+      amount: this.betAmount,
+      avaliadorId: 1 // ID do avaliador padrão
     };
 
     this.betsService.createBet(betData).subscribe({

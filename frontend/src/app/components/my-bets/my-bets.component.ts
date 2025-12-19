@@ -7,7 +7,7 @@ interface BetWithUsers {
   id: number;
   description: string;
   amount: number;
-  status: string;
+  status: number;
   createdAt: Date;
   creator: User;
   opponent: User;
@@ -26,9 +26,11 @@ interface BetWithUsers {
 })
 export class MyBetsComponent implements OnInit {
   bets: BetWithUsers[] = [];
+  filteredBets: BetWithUsers[] = [];
   currentUser: User | null = null;
   loading: boolean = true;
   showProfileMenu: boolean = false;
+  activeFilter: number | null = null;
 
   constructor(
     private betsService: BetsService,
@@ -45,6 +47,7 @@ export class MyBetsComponent implements OnInit {
     this.betsService.getUserBets().subscribe({
       next: (bets: any) => {
         this.bets = bets;
+        this.filteredBets = bets;
         this.loading = false;
       },
       error: (error: any) => {
@@ -55,6 +58,15 @@ export class MyBetsComponent implements OnInit {
     });
   }
 
+  filterByStatus(status: number | null): void {
+    this.activeFilter = status;
+    if (status === null) {
+      this.filteredBets = this.bets;
+    } else {
+      this.filteredBets = this.bets.filter(bet => bet.status === status);
+    }
+  }
+
   isCreator(bet: BetWithUsers): boolean {
     return bet.creatorId === this.currentUser?.id;
   }
@@ -63,8 +75,14 @@ export class MyBetsComponent implements OnInit {
     return this.isCreator(bet) ? bet.opponent.name : bet.creator.name;
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status: number | string): string {
     const labels: any = {
+      0: 'Pendente',
+      1: 'Mudar Laranja',
+      2: 'Aceita',
+      3: 'Rejeitada',
+      4: 'Finalizada',
+      5: 'Rejeitada pelo Laranja',
       'pending': 'Pendente',
       'accepted': 'Aceita',
       'rejected': 'Rejeitada',
@@ -73,8 +91,17 @@ export class MyBetsComponent implements OnInit {
     return labels[status] || status;
   }
 
-  getStatusClass(status: string): string {
-    return `status-${status}`;
+  getStatusClass(status: number | string): string {
+    const statusMap: any = {
+      0: 'pending',
+      1: 'change-avaliador',
+      2: 'accepted',
+      3: 'rejected',
+      4: 'completed',
+      5: 'rejected'
+    };
+    const statusName = typeof status === 'number' ? statusMap[status] : status;
+    return `status-${statusName}`;
   }
 
   goBack(): void {

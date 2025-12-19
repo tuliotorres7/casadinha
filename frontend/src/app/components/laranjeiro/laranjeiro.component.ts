@@ -43,10 +43,8 @@ export class LaranjeiroComponent implements OnInit {
   loadBetsAsAvaliador(): void {
     this.betsService.getBetsAsAvaliador().subscribe({
       next: (bets: any) => {
-        // Filtrar apostas pendentes que precisam de julgamento
-        this.bets = bets.filter((bet: BetWithUsers) => 
-          bet.status === 'pending' && !bet.winnerId
-        );
+        // Backend já retorna apenas apostas aceitas aguardando julgamento
+        this.bets = bets;
         this.loading = false;
       },
       error: (error: any) => {
