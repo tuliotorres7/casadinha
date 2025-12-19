@@ -19,6 +19,7 @@ export class UsersListComponent implements OnInit {
   users: UsersResponse[] = [];
   currentUser: User | null = null;
   loading: boolean = true;
+  showProfileMenu: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -54,5 +55,39 @@ export class UsersListComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/home']);
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  goToHome(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/home']);
+  }
+
+  goToMyBets(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/my-bets']);
+  }
+
+  createBet(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/create-bet']);
+  }
+
+  goToUsers(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/users']);
+  }
+
+  goToLaranjeiro(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/laranjeiro']);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

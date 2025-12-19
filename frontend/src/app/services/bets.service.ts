@@ -85,4 +85,28 @@ export class BetsService {
       { headers: this.getHeaders() }
     );
   }
+
+  changeAvaliador(betId: number, newAvaliadorId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/change-avaliador`,
+      { newAvaliadorId },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  approveAvaliadorChange(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/approve-avaliador-change`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  rejectAvaliadorChange(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/reject-avaliador-change`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
 }

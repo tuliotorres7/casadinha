@@ -175,6 +175,32 @@
   color: #5568d3;
 }
 
+.stat-card.won .stat-value {
+  color: #059669;
+}
+
+.stat-card.won.active {
+  border-color: #059669;
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+}
+
+.stat-card.won.active .stat-value {
+  color: #047857;
+}
+
+.stat-card.lost .stat-value {
+  color: #dc2626;
+}
+
+.stat-card.lost.active {
+  border-color: #dc2626;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+}
+
+.stat-card.lost.active .stat-value {
+  color: #b91c1c;
+}
+
 .stat-icon {
   font-size: 2.5rem;
 }
@@ -533,5 +559,207 @@
 
   .bet-actions {
     flex-direction: column;
+  }
+}
+
+/* Modal de Troca de Avaliador */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 2rem;
+  max-height: calc(80vh - 100px);
+  overflow-y: auto;
+}
+
+.modal-description {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.user-item:hover {
+  background: #e9ecef;
+  border-color: #667eea;
+  transform: translateX(5px);
+}
+
+.user-avatar-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #667eea;
+}
+
+.user-info-modal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name-modal {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.user-email-modal {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.user-coins-modal {
+  font-weight: 600;
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.empty-users {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* Botão de trocar avaliador */
+.btn-change-avaliador {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.btn-change-avaliador:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.bet-info {
+  position: relative;
+}
+
+/* Avaliador proposto */
+.proposed-avaliador {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  padding: 0.75rem;
+  border-radius: 10px;
+  animation: pulse 2s infinite;
+}
+
+.proposed-avaliador .info-label {
+  color: #78350f;
+  font-weight: 700;
+}
+
+.proposed-avaliador .info-value {
+  color: #78350f;
+  font-weight: 600;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
   }
 }

@@ -62,4 +62,9 @@ export class HomeComponent implements OnInit {
   closeProfileMenuOnAction(): void {
     this.closeProfileMenu();
   }
+
+  goHome(): void {
+    this.showProfileMenu = false;
+    // Já estamos na home, apenas fecha o menu
+  }
 }

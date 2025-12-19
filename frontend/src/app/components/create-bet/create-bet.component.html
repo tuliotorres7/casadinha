@@ -1,4 +1,53 @@
 <div class="create-bet-container">
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo" (click)="goToHome()" style="cursor: pointer;">
+        <h1>🎲 Casadinha</h1>
+      </div>
+      <div class="user-info" *ngIf="currentUser">
+        <div class="coins">
+          <span class="coin-icon">🪙</span>
+          <span class="coin-amount">{{ currentUser.coins }}</span>
+        </div>
+        <div class="profile-container" (click)="toggleProfileMenu()">
+          <img [src]="currentUser.picture" [alt]="currentUser.name" class="user-avatar">
+          <span class="user-name">{{ currentUser.name }}</span>
+          <span class="dropdown-arrow">▼</span>
+          
+          <div class="profile-menu" *ngIf="showProfileMenu" (click)="$event.stopPropagation()">
+            <div class="menu-item" (click)="goToHome()">
+              <span class="menu-icon">🏠</span>
+              <span>Home</span>
+            </div>
+            <div class="menu-item" (click)="goToMyBets()">
+              <span class="menu-icon">🎯</span>
+              <span>Minhas Apostas</span>
+            </div>
+            <div class="menu-item" (click)="createBet()">
+              <span class="menu-icon">➕</span>
+              <span>Criar Aposta</span>
+            </div>
+            <div class="menu-item" (click)="goToUsers()">
+              <span class="menu-icon">👥</span>
+              <span>Jogue com Amigos</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" (click)="goToLaranjeiro()">
+              <span class="menu-icon">🍊</span>
+              <span>Laranjeiro</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" (click)="logout()">
+              <span class="menu-icon">🚪</span>
+              <span>Sair</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
   <div class="create-bet-card">
     <h2>Nova Aposta</h2>
     
@@ -55,4 +104,5 @@
       </div>
     </form>
   </div>
+  </main>
 </div>

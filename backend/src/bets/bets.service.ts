@@ -69,6 +69,7 @@ export class BetsService {
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
                 { model: User, as: 'avaliador', required: false },
+                { model: User, as: 'proposedAvaliador', required: false },
                 { model: User, as: 'winner' },
             ],
             order: [['createdAt', 'DESC']],
@@ -92,6 +93,7 @@ export class BetsService {
                 { model: User, as: 'opponent' },
                 { model: User, as: 'winner' },
                 { model: User, as: 'avaliador', required: false },
+                { model: User, as: 'proposedAvaliador', required: false },
             ],
         });
 
@@ -282,6 +284,96 @@ export class BetsService {
 
         // Rejeitar a aposta pelo avaliador
         bet.status = BetStatus.REJECTED_BY_AVALIADOR;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
+    async changeAvaliador(betId: number, userId: number, newAvaliadorId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é criador ou oponente
+        if (bet.creatorId !== userId && bet.opponentId !== userId) {
+            throw new BadRequestException('Apenas os apostadores podem solicitar mudança de avaliador');
+        }
+
+        // Verificar se a aposta está pendente ou já em processo de mudança de avaliador
+        if (bet.status !== BetStatus.PENDING && bet.status !== BetStatus.CHANGE_AVALIADOR) {
+            throw new BadRequestException('Apenas apostas pendentes podem ter o avaliador alterado');
+        }
+
+        // Verificar se o novo avaliador existe
+        const newAvaliador = await this.userModel.findByPk(newAvaliadorId);
+        if (!newAvaliador) {
+            throw new NotFoundException('Avaliador não encontrado');
+        }
+
+        // Verificar se o novo avaliador não é um dos apostadores
+        if (newAvaliadorId === bet.creatorId || newAvaliadorId === bet.opponentId) {
+            throw new BadRequestException('O avaliador não pode ser um dos apostadores');
+        }
+
+        // Salvar o novo avaliador proposto e mudar status para CHANGE_AVALIADOR
+        bet.proposedAvaliadorId = newAvaliadorId;
+        bet.status = BetStatus.CHANGE_AVALIADOR;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
+    async approveAvaliadorChange(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o criador da aposta
+        if (bet.creatorId !== userId) {
+            throw new BadRequestException('Apenas o criador da aposta pode aprovar a mudança de avaliador');
+        }
+
+        // Verificar se a aposta está com status de mudança de avaliador
+        if (bet.status !== BetStatus.CHANGE_AVALIADOR) {
+            throw new BadRequestException('Não há mudança de avaliador pendente para esta aposta');
+        }
+
+        // Verificar se existe um avaliador proposto
+        if (!bet.proposedAvaliadorId) {
+            throw new BadRequestException('Nenhum avaliador proposto encontrado');
+        }
+
+        // Aprovar a mudança: atualizar avaliador e ir para ACCEPTED
+        bet.avaliadorId = bet.proposedAvaliadorId;
+        bet.proposedAvaliadorId = null;
+        bet.status = BetStatus.ACCEPTED;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
+    async rejectAvaliadorChange(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o criador da aposta
+        if (bet.creatorId !== userId) {
+            throw new BadRequestException('Apenas o criador da aposta pode rejeitar a mudança de avaliador');
+        }
+
+        // Verificar se a aposta está com status de mudança de avaliador
+        if (bet.status !== BetStatus.CHANGE_AVALIADOR) {
+            throw new BadRequestException('Não há mudança de avaliador pendente para esta aposta');
+        }
+
+        // Buscar o criador para devolver as moedas
+        const creator = await this.userModel.findByPk(bet.creatorId);
+        if (!creator) {
+            throw new NotFoundException('Criador não encontrado');
+        }
+
+        // Devolver as moedas ao criador
+        creator.coins += bet.amount;
+        await creator.save();
+
+        // Rejeitar a aposta: limpar avaliador proposto e ir para REJECTED
+        bet.proposedAvaliadorId = null;
+        bet.status = BetStatus.REJECTED;
         await bet.save();
 
         return this.findBetById(betId);

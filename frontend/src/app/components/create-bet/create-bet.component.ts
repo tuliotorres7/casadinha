@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BetsService } from '../../services/bets.service';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-create-bet',
@@ -12,14 +13,18 @@ export class CreateBetComponent implements OnInit {
   friendEmail: string = '';
   betAmount: number = 0;
   loading: boolean = false;
+  currentUser: User | null = null;
+  showProfileMenu: boolean = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private betsService: BetsService
+    private betsService: BetsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
     // Pré-preencher email se vier da página de usuários
     this.route.queryParams.subscribe(params => {
       if (params['friendEmail']) {
@@ -65,5 +70,34 @@ export class CreateBetComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/home']);
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  goToHome(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/home']);
+  }
+
+  goToMyBets(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/my-bets']);
+  }
+
+  goToUsers(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/users']);
+  }
+
+  goToLaranjeiro(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/laranjeiro']);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

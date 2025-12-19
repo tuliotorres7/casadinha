@@ -15,6 +15,10 @@
           <span class="dropdown-arrow">▼</span>
           
           <div class="profile-menu" *ngIf="showProfileMenu" (click)="$event.stopPropagation()">
+            <div class="menu-item" (click)="goToHome()">
+              <span class="menu-icon">🏠</span>
+              <span>Home</span>
+            </div>
             <div class="menu-item" (click)="goBack()">
               <span class="menu-icon">🎯</span>
               <span>Minhas Apostas</span>
@@ -67,6 +71,20 @@
             <span class="stat-value">{{ (bets | filter: 'status': 2).length }}</span>
           </div>
         </div>
+        <div class="stat-card won" (click)="filterByWon()" [class.active]="activeFilter === 'won'">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-info">
+            <span class="stat-label">Ganhas</span>
+            <span class="stat-value">{{ getWonBetsCount() }}</span>
+          </div>
+        </div>
+        <div class="stat-card lost" (click)="filterByLost()" [class.active]="activeFilter === 'lost'">
+          <div class="stat-icon">😢</div>
+          <div class="stat-info">
+            <span class="stat-label">Perdidas</span>
+            <span class="stat-value">{{ getLostBetsCount() }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="bets-list" *ngIf="filteredBets.length > 0">
@@ -106,7 +124,23 @@
                 <span class="info-icon">🍊</span>
                 <div class="info-content">
                   <span class="info-label">Laranja</span>
-                  <span class="info-value">{{ bet.avaliador?.name || 'Não definido' }}</span>
+                  <span class="info-value">{{ bet.avaliador.name || 'Não definido' }}</span>
+                </div>
+                <button 
+                  *ngIf="canChangeAvaliador(bet)" 
+                  class="btn-change-avaliador" 
+                  (click)="openChangeAvaliadorModal(bet)"
+                  title="Trocar avaliador">
+                  🔄
+                </button>
+              </div>
+
+              <!-- Mostrar avaliador proposto se houver -->
+              <div class="bet-info proposed-avaliador" *ngIf="bet.status === 1 && bet.proposedAvaliador">
+                <span class="info-icon">🔄</span>
+                <div class="info-content">
+                  <span class="info-label">Novo Laranja Proposto</span>
+                  <span class="info-value">{{ bet.proposedAvaliador.name }}</span>
                 </div>
               </div>
 
@@ -132,9 +166,16 @@
             </div>
           </div>
 
+          <!-- Botões para aceitar/rejeitar aposta pendente -->
           <div class="bet-actions" *ngIf="bet.status === 0 && !isCreator(bet)">
             <button class="btn-accept" (click)="acceptBet(bet.id)">Achei um besta pra pagar minha netflix</button>
             <button class="btn-reject" (click)="rejectBet(bet.id)">Nao achei meu dinheiro no lixo</button>
+          </div>
+
+          <!-- Botões para aprovar/rejeitar mudança de avaliador -->
+          <div class="bet-actions" *ngIf="canApproveAvaliadorChange(bet)">
+            <button class="btn-accept" (click)="approveAvaliadorChange(bet.id)">✅ Aprovar Novo Laranja</button>
+            <button class="btn-reject" (click)="rejectAvaliadorChange(bet.id)">❌ Frescurada, alarga mão</button>
           </div>
         </div>
       </div>
@@ -159,4 +200,36 @@
       <p>Carregando apostas...</p>
     </div>
   </main>
+
+  <!-- Modal de Troca de Avaliador -->
+  <div class="modal-overlay" *ngIf="showAvaliadorModal" (click)="closeAvaliadorModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>🍊 Escolher Novo Avaliador</h2>
+        <button class="btn-close" (click)="closeAvaliadorModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-description">Selecione um novo laranja para julgar esta aposta:</p>
+        
+        <div class="users-list" *ngIf="availableUsers.length > 0">
+          <div 
+            class="user-item" 
+            *ngFor="let user of availableUsers" 
+            (click)="changeAvaliador(user.id)">
+            <img [src]="user.picture" [alt]="user.name" class="user-avatar-small">
+            <div class="user-info-modal">
+              <span class="user-name-modal">{{ user.name }}</span>
+              <span class="user-email-modal">{{ user.email }}</span>
+            </div>
+            <span class="user-coins-modal">🪙 {{ user.coins }}</span>
+          </div>
+        </div>
+
+        <div class="empty-users" *ngIf="availableUsers.length === 0">
+          <p>Carregando usuários disponíveis...</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

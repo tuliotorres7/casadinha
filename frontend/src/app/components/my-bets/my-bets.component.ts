@@ -12,10 +12,12 @@ interface BetWithUsers {
   creator: User;
   opponent: User;
   avaliador: User;
+  proposedAvaliador?: User;
   winner?: User;
   creatorId: number;
   opponentId: number;
   avaliadorId: number;
+  proposedAvaliadorId?: number;
   winnerId?: number;
 }
 
@@ -30,7 +32,10 @@ export class MyBetsComponent implements OnInit {
   currentUser: User | null = null;
   loading: boolean = true;
   showProfileMenu: boolean = false;
-  activeFilter: number | null = null;
+  activeFilter: number | string | null = null;
+  showAvaliadorModal: boolean = false;
+  selectedBetForChange: BetWithUsers | null = null;
+  availableUsers: User[] = [];
 
   constructor(
     private betsService: BetsService,
@@ -65,6 +70,32 @@ export class MyBetsComponent implements OnInit {
     } else {
       this.filteredBets = this.bets.filter(bet => bet.status === status);
     }
+  }
+
+  filterByWon(): void {
+    this.activeFilter = 'won';
+    this.filteredBets = this.bets.filter(bet => 
+      bet.status === 4 && bet.winnerId === this.currentUser?.id
+    );
+  }
+
+  filterByLost(): void {
+    this.activeFilter = 'lost';
+    this.filteredBets = this.bets.filter(bet => 
+      bet.status === 4 && bet.winnerId !== this.currentUser?.id && bet.winnerId !== null
+    );
+  }
+
+  getWonBetsCount(): number {
+    return this.bets.filter(bet => 
+      bet.status === 4 && bet.winnerId === this.currentUser?.id
+    ).length;
+  }
+
+  getLostBetsCount(): number {
+    return this.bets.filter(bet => 
+      bet.status === 4 && bet.winnerId !== this.currentUser?.id && bet.winnerId !== null
+    ).length;
   }
 
   isCreator(bet: BetWithUsers): boolean {
@@ -173,5 +204,88 @@ export class MyBetsComponent implements OnInit {
   goToUsers(): void {
     this.showProfileMenu = false;
     this.router.navigate(['/users']);
+  }
+
+  openChangeAvaliadorModal(bet: BetWithUsers): void {
+    this.selectedBetForChange = bet;
+    this.showAvaliadorModal = true;
+    this.loadAvailableUsers(bet);
+  }
+
+  closeAvaliadorModal(): void {
+    this.showAvaliadorModal = false;
+    this.selectedBetForChange = null;
+    this.availableUsers = [];
+  }
+
+  loadAvailableUsers(bet: BetWithUsers): void {
+    this.authService.getAllUsers().subscribe({
+      next: (users: User[]) => {
+        // Filtrar para não incluir os apostadores
+        this.availableUsers = users.filter(
+          user => user.id !== bet.creatorId && user.id !== bet.opponentId
+        );
+      },
+      error: (error: any) => {
+        console.error('Erro ao carregar usuários:', error);
+        alert('Erro ao carregar usuários disponíveis');
+      }
+    });
+  }
+
+  changeAvaliador(newAvaliadorId: number): void {
+    if (!this.selectedBetForChange) return;
+
+    this.betsService.changeAvaliador(this.selectedBetForChange.id, newAvaliadorId).subscribe({
+      next: () => {
+        alert('Solicitação de mudança de avaliador enviada! Aguardando aprovação do criador da aposta.');
+        this.closeAvaliadorModal();
+        this.loadBets();
+      },
+      error: (error: any) => {
+        console.error('Erro ao solicitar mudança de avaliador:', error);
+        alert(error.error?.message || 'Erro ao solicitar mudança de avaliador');
+      }
+    });
+  }
+
+  approveAvaliadorChange(betId: number): void {
+    if (confirm('Deseja aprovar a mudança de avaliador?')) {
+      this.betsService.approveAvaliadorChange(betId).subscribe({
+        next: () => {
+          alert('Mudança de avaliador aprovada com sucesso!');
+          this.loadBets();
+        },
+        error: (error: any) => {
+          console.error('Erro ao aprovar mudança:', error);
+          alert(error.error?.message || 'Erro ao aprovar mudança de avaliador');
+        }
+      });
+    }
+  }
+
+  rejectAvaliadorChange(betId: number): void {
+    if (confirm('Deseja rejeitar a mudança de avaliador?')) {
+      this.betsService.rejectAvaliadorChange(betId).subscribe({
+        next: () => {
+          alert('Mudança de avaliador rejeitada.');
+          this.loadBets();
+        },
+        error: (error: any) => {
+          console.error('Erro ao rejeitar mudança:', error);
+          alert(error.error?.message || 'Erro ao rejeitar mudança de avaliador');
+        }
+      });
+    }
+  }
+
+  canChangeAvaliador(bet: BetWithUsers): boolean {
+    // Pode mudar o avaliador se a aposta está pendente e o usuário é apostador
+    return bet.status === 0 && (bet.creatorId === this.currentUser?.id || bet.opponentId === this.currentUser?.id);
+  }
+
+  canApproveAvaliadorChange(bet: BetWithUsers): boolean {
+    // Apenas o criador pode aprovar/rejeitar se o status for CHANGE_AVALIADOR
+    return bet.status === 1 && bet.creatorId === this.currentUser?.id;
   }
 }
