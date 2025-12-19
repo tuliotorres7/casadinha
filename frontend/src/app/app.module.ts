@@ -10,7 +10,9 @@ import { HomeComponent } from './components/home/home.component';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
 import { CreateBetComponent } from './components/create-bet/create-bet.component';
 import { UsersListComponent } from './components/users-list/users-list.component';
+import { MyBetsComponent } from './components/my-bets/my-bets.component';
 import { AuthGuard } from './guards/auth.guard';
+import { FilterPipe } from './pipes/filter.pipe';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -19,6 +21,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'create-bet', component: CreateBetComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersListComponent, canActivate: [AuthGuard] },
+  { path: 'my-bets', component: MyBetsComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
@@ -29,6 +32,8 @@ const routes: Routes = [
     AuthCallbackComponent,
     CreateBetComponent,
     UsersListComponent,
+    MyBetsComponent,
+    FilterPipe,
   ],
   imports: [
     BrowserModule,

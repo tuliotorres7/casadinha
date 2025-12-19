@@ -33,4 +33,8 @@ export class HomeComponent implements OnInit {
   viewUsers(): void {
     this.router.navigate(['/users']);
   }
+
+  viewMyBets(): void {
+    this.router.navigate(['/my-bets']);
+  }
 }

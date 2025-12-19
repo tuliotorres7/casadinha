@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsEmail, Min } from 'class-validator';
+import { IsString, IsNumber, IsEmail, Min, IsOptional } from 'class-validator';
 
 export class CreateBetDto {
   @IsString()
@@ -10,4 +10,8 @@ export class CreateBetDto {
   @IsNumber()
   @Min(1)
   amount: number;
+
+  @IsOptional()
+  @IsNumber()
+  avaliadorId?: number;
 }

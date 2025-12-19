@@ -68,6 +68,17 @@ export class Bet extends Model {
   @BelongsTo(() => User, 'winnerId')
   winner: User;
 
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+  })
+  avaliadorId: number;
+
+  @BelongsTo(() => User, 'avaliadorId')
+  avaliador: User;
+
   @CreatedAt
   createdAt: Date;
 
