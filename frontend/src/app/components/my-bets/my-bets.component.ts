@@ -28,6 +28,7 @@ export class MyBetsComponent implements OnInit {
   bets: BetWithUsers[] = [];
   currentUser: User | null = null;
   loading: boolean = true;
+  showProfileMenu: boolean = false;
 
   constructor(
     private betsService: BetsService,
@@ -80,8 +81,26 @@ export class MyBetsComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
   createNewBet(): void {
     this.router.navigate(['/create-bet']);
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  goToLaranjeiro(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/laranjeiro']);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   isWinner(bet: BetWithUsers): boolean {
@@ -122,5 +141,10 @@ export class MyBetsComponent implements OnInit {
         }
       });
     }
+  }
+
+  goToUsers(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/users']);
   }
 }

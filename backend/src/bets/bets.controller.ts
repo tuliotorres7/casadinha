@@ -57,4 +57,10 @@ export class BetsController {
     const userId = req.user.id;
     return this.betsService.rejectBet(+id, userId);
   }
+
+  @Patch(':id/reject-avaliador')
+  async rejectAsAvaliador(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    return this.betsService.rejectAsAvaliador(+id, userId);
+  }
 }

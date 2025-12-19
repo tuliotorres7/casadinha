@@ -36,14 +36,17 @@ export class HomeComponent implements OnInit {
   }
 
   createBet(): void {
+    this.closeProfileMenu();
     this.router.navigate(['/create-bet']);
   }
 
   viewUsers(): void {
+    this.closeProfileMenu();
     this.router.navigate(['/users']);
   }
 
   viewMyBets(): void {
+    this.closeProfileMenu();
     this.router.navigate(['/my-bets']);
   }
 
@@ -54,5 +57,9 @@ export class HomeComponent implements OnInit {
 
   viewRanking(): void {
     this.router.navigate(['/ranking']);
+  }
+
+  closeProfileMenuOnAction(): void {
+    this.closeProfileMenu();
   }
 }

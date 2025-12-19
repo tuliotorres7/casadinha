@@ -215,6 +215,48 @@ export class BetsService {
         return this.findBetById(betId);
     }
 
+    async rejectAsAvaliador(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o avaliador
+        if (bet.avaliadorId !== userId) {
+            throw new BadRequestException('Apenas o avaliador pode recusar julgar esta aposta');
+        }
+
+        // Verificar se a aposta está aceita (não pode recusar se já tiver vencedor)
+        if (bet.status === BetStatus.COMPLETED) {
+            throw new BadRequestException('Não é possível recusar apostas já finalizadas');
+        }
+
+        if (bet.status === BetStatus.REJECTED) {
+            throw new BadRequestException('Esta aposta já foi rejeitada');
+        }
+
+        // Buscar o criador e oponente para devolver as moedas
+        const creator = await this.userModel.findByPk(bet.creatorId);
+        const opponent = await this.userModel.findByPk(bet.opponentId);
+
+        if (!creator) {
+            throw new NotFoundException('Criador não encontrado');
+        }
+
+        // Devolver moedas ao criador
+        creator.coins += bet.amount;
+        await creator.save();
+
+        // Devolver moedas ao oponente se a aposta foi aceita
+        if (bet.status === BetStatus.ACCEPTED && opponent) {
+            opponent.coins += bet.amount;
+            await opponent.save();
+        }
+
+        // Rejeitar a aposta (mantém o avaliador registrado)
+        bet.status = BetStatus.REJECTED;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
     async getRanking(): Promise<any> {
         // Buscar todas as apostas completadas
         const completedBets = await this.betModel.findAll({

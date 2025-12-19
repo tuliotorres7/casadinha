@@ -77,4 +77,12 @@ export class BetsService {
       { headers: this.getHeaders() }
     );
   }
+
+  rejectAsAvaliador(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/reject-avaliador`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
 }
