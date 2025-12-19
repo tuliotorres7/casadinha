@@ -1,0 +1,298 @@
+.ranking-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+}
+
+.nav-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.back-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.navbar h1 {
+  color: #667eea;
+  font-size: 1.8rem;
+  margin: 0;
+  flex: 1;
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.intro-section {
+  text-align: center;
+  color: white;
+  margin-bottom: 3rem;
+}
+
+.intro-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.intro-text p {
+  font-size: 1.3rem;
+  opacity: 0.95;
+}
+
+.rankings-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 2rem;
+}
+
+.ranking-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.winners-card .card-header h2 {
+  color: #10b981;
+}
+
+.losers-card .card-header h2 {
+  color: #ef4444;
+}
+
+.card-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.card-header h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #718096;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.rank-item:hover {
+  transform: translateX(5px);
+  background: #edf2f7;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.rank-position {
+  min-width: 50px;
+  text-align: center;
+}
+
+.position-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 900;
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.position-number.gold {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.position-number.silver {
+  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+  color: #fff;
+}
+
+.position-number.bronze {
+  background: linear-gradient(135deg, #cd7f32, #daa520);
+  color: #fff;
+}
+
+.position-number.loser {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #667eea;
+  object-fit: cover;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.user-stats {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.stats-badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.badge-icon {
+  font-size: 1.2rem;
+}
+
+.win-badge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.loss-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.rate-badge {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.coins-badge {
+  font-weight: 900;
+}
+
+.coins-badge.positive {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.coins-badge.negative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #718096;
+  font-size: 1.2rem;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  .rankings-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar h1 {
+    font-size: 1.2rem;
+  }
+
+  .intro-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .rank-item {
+    flex-wrap: wrap;
+  }
+
+  .stats-badges {
+    width: 100%;
+    justify-content: center;
+  }
+}

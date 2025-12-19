@@ -251,6 +251,91 @@
   transform: scale(1.05);
 }
 
+.winner-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #f7fafc;
+}
+
+.winner-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.winner-banner.you-won {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 3px solid #10b981;
+}
+
+.winner-banner.you-lost {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 3px solid #ef4444;
+}
+
+.winner-icon {
+  font-size: 3rem;
+}
+
+.winner-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.winner-label {
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.you-won .winner-label {
+  color: #065f46;
+}
+
+.you-lost .winner-label {
+  color: #991b1b;
+}
+
+.winner-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.winner-coins {
+  font-size: 1.5rem;
+  font-weight: 900;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+.you-won .winner-coins {
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.you-lost .winner-coins {
+  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+}
+
 .empty-state {
   background: white;
   border-radius: 20px;

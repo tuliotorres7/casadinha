@@ -12,9 +12,11 @@ interface BetWithUsers {
   creator: User;
   opponent: User;
   avaliador: User;
+  winner?: User;
   creatorId: number;
   opponentId: number;
   avaliadorId: number;
+  winnerId?: number;
 }
 
 @Component({
@@ -80,5 +82,45 @@ export class MyBetsComponent implements OnInit {
 
   createNewBet(): void {
     this.router.navigate(['/create-bet']);
+  }
+
+  isWinner(bet: BetWithUsers): boolean {
+    debugger
+    return bet.winnerId === this.currentUser?.id;
+  }
+
+  getWinnerName(bet: BetWithUsers): string {
+    if (!bet.winner) return 'Não definido';
+    return bet.winner.name;
+  }
+
+  acceptBet(betId: number): void {
+    if (confirm('Tem certeza que deseja aceitar esta aposta?')) {
+      this.betsService.acceptBet(betId).subscribe({
+        next: () => {
+          alert('Aposta aceita com sucesso!');
+          this.loadBets();
+        },
+        error: (error: any) => {
+          console.error('Erro ao aceitar aposta:', error);
+          alert(error.error?.message || 'Erro ao aceitar aposta');
+        }
+      });
+    }
+  }
+
+  rejectBet(betId: number): void {
+    if (confirm('Tem certeza que deseja recusar esta aposta?')) {
+      this.betsService.rejectBet(betId).subscribe({
+        next: () => {
+          alert('Aposta recusada. As moedas foram devolvidas ao criador.');
+          this.loadBets();
+        },
+        error: (error: any) => {
+          console.error('Erro ao recusar aposta:', error);
+          alert(error.error?.message || 'Erro ao recusar aposta');
+        }
+      });
+    }
   }
 }

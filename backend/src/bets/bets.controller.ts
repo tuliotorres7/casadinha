@@ -26,6 +26,11 @@ export class BetsController {
     return this.betsService.findBetsAsAvaliador(userId);
   }
 
+  @Get('ranking')
+  async getRanking() {
+    return this.betsService.getRanking();
+  }
+
   @Get(':id')
   async getBetById(@Param('id') id: string) {
     return this.betsService.findBetById(+id);
@@ -39,5 +44,17 @@ export class BetsController {
   ) {
     const avaliadorId = req.user.id;
     return this.betsService.declareWinner(+id, winnerId, avaliadorId);
+  }
+
+  @Patch(':id/accept')
+  async acceptBet(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    return this.betsService.acceptBet(+id, userId);
+  }
+
+  @Patch(':id/reject')
+  async rejectBet(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    return this.betsService.rejectBet(+id, userId);
   }
 }

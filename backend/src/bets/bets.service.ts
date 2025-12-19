@@ -69,6 +69,7 @@ export class BetsService {
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
                 { model: User, as: 'avaliador' },
+                { model: User, as: 'winner' },
             ],
             order: [['createdAt', 'DESC']],
         });
@@ -147,5 +148,161 @@ export class BetsService {
         await winner.save();
 
         return this.findBetById(betId);
+    }
+
+    async acceptBet(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o oponente
+        if (bet.opponentId !== userId) {
+            throw new BadRequestException('Apenas o oponente pode aceitar a aposta');
+        }
+
+        // Verificar se a aposta está pendente
+        if (bet.status !== BetStatus.PENDING) {
+            throw new BadRequestException('Apenas apostas pendentes podem ser aceitas');
+        }
+
+        // Buscar o oponente
+        const opponent = await this.userModel.findByPk(userId);
+        if (!opponent) {
+            throw new NotFoundException('Usuário não encontrado');
+        }
+
+        // Verificar se o oponente tem moedas suficientes
+        if (opponent.coins < bet.amount) {
+            throw new BadRequestException('Moedas insuficientes para aceitar esta aposta');
+        }
+
+        // Deduzir as moedas do oponente
+        opponent.coins -= bet.amount;
+        await opponent.save();
+
+        // Atualizar status da aposta
+        bet.status = BetStatus.ACCEPTED;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
+    async rejectBet(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o oponente
+        if (bet.opponentId !== userId) {
+            throw new BadRequestException('Apenas o oponente pode recusar a aposta');
+        }
+
+        // Verificar se a aposta está pendente
+        if (bet.status !== BetStatus.PENDING) {
+            throw new BadRequestException('Apenas apostas pendentes podem ser recusadas');
+        }
+
+        // Buscar o criador para devolver as moedas
+        const creator = await this.userModel.findByPk(bet.creatorId);
+        if (!creator) {
+            throw new NotFoundException('Criador não encontrado');
+        }
+
+        // Devolver as moedas ao criador
+        creator.coins += bet.amount;
+        await creator.save();
+
+        // Atualizar status da aposta
+        bet.status = BetStatus.REJECTED;
+        await bet.save();
+
+        return this.findBetById(betId);
+    }
+
+    async getRanking(): Promise<any> {
+        // Buscar todas as apostas completadas
+        const completedBets = await this.betModel.findAll({
+            where: {
+                status: BetStatus.COMPLETED,
+            },
+            include: [
+                { model: User, as: 'creator' },
+                { model: User, as: 'opponent' },
+                { model: User, as: 'winner' },
+            ],
+        });
+
+        // Calcular estatísticas por usuário
+        const userStatsMap = new Map();
+
+        completedBets.forEach(bet => {
+            // Processar criador
+            if (!userStatsMap.has(bet.creatorId)) {
+                userStatsMap.set(bet.creatorId, {
+                    user: bet.creator,
+                    wins: 0,
+                    losses: 0,
+                    totalBets: 0,
+                    coinsWon: 0,
+                    coinsLost: 0,
+                });
+            }
+
+            // Processar oponente
+            if (!userStatsMap.has(bet.opponentId)) {
+                userStatsMap.set(bet.opponentId, {
+                    user: bet.opponent,
+                    wins: 0,
+                    losses: 0,
+                    totalBets: 0,
+                    coinsWon: 0,
+                    coinsLost: 0,
+                });
+            }
+
+            const creatorStats = userStatsMap.get(bet.creatorId);
+            const opponentStats = userStatsMap.get(bet.opponentId);
+
+            creatorStats.totalBets++;
+            opponentStats.totalBets++;
+
+            if (bet.winnerId === bet.creatorId) {
+                creatorStats.wins++;
+                creatorStats.coinsWon += bet.amount * 2;
+                opponentStats.losses++;
+                opponentStats.coinsLost += bet.amount;
+            } else if (bet.winnerId === bet.opponentId) {
+                opponentStats.wins++;
+                opponentStats.coinsWon += bet.amount * 2;
+                creatorStats.losses++;
+                creatorStats.coinsLost += bet.amount;
+            }
+        });
+
+        // Converter para array e calcular taxa de vitória
+        const userStats = Array.from(userStatsMap.values()).map(stats => ({
+            ...stats,
+            winRate: stats.totalBets > 0 ? Math.round((stats.wins / stats.totalBets) * 100) : 0,
+            balance: stats.coinsWon - stats.coinsLost,
+        }));
+
+        // Ordenar por vitórias (top winners)
+        const winners = [...userStats]
+            .filter(s => s.wins > 0)
+            .sort((a, b) => {
+                if (b.wins !== a.wins) return b.wins - a.wins;
+                return b.winRate - a.winRate;
+            })
+            .slice(0, 10);
+
+        // Ordenar por derrotas (top losers)
+        const losers = [...userStats]
+            .filter(s => s.losses > 0)
+            .sort((a, b) => {
+                if (b.losses !== a.losses) return b.losses - a.losses;
+                return a.winRate - b.winRate;
+            })
+            .slice(0, 10);
+
+        return {
+            winners,
+            losers,
+        };
     }
 }

@@ -1,0 +1,108 @@
+<div class="ranking-container">
+  <nav class="navbar">
+    <div class="nav-content">
+      <button class="back-btn" (click)="goBack()">
+        ← Voltar
+      </button>
+      <h1>🏆 Ranking - Quem basca a Coca de quem?</h1>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="intro-section" *ngIf="!loading">
+      <div class="intro-text">
+        <h2>🥤 Descubra quem tá bancando e quem tá mamando!</h2>
+        <p>Veja quem são os campeões e quem está devendo uma rodada...</p>
+      </div>
+    </div>
+
+    <div class="rankings-section" *ngIf="!loading">
+      <!-- Top Winners -->
+      <div class="ranking-card winners-card">
+        <div class="card-header">
+          <h2>🏆 Os Ratos</h2>
+          <p class="subtitle">Os campeões que estão comendo de graça!</p>
+        </div>
+        
+        <div class="ranking-list" *ngIf="winners.length > 0">
+          <div class="rank-item" *ngFor="let stat of winners; let i = index">
+            <div class="rank-position">
+              <span class="position-number" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+                {{ i + 1 }}
+              </span>
+            </div>
+            <img [src]="stat.user.picture" [alt]="stat.user.name" class="user-avatar">
+            <div class="user-info">
+              <span class="user-name">{{ stat.user.name }}</span>
+              <span class="user-stats">{{ stat.wins }} vitórias / {{ stat.losses }} derrotas</span>
+            </div>
+            <div class="stats-badges">
+              <div class="badge win-badge">
+                <span class="badge-icon">✅</span>
+                <span>{{ stat.wins }}</span>
+              </div>
+              <div class="badge rate-badge">
+                <span class="badge-icon">📊</span>
+                <span>{{ stat.winRate }}%</span>
+              </div>
+              <div class="badge coins-badge positive">
+                <span class="badge-icon">🪙</span>
+                <span>+{{ stat.balance }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="winners.length === 0">
+          <p>😅 Ninguém venceu apostas ainda!</p>
+        </div>
+      </div>
+
+      <!-- Top Losers -->
+      <div class="ranking-card losers-card">
+        <div class="card-header">
+          <h2>💸 Os Patos</h2>
+          <p class="subtitle">Os coitados que tão bancando a galera!</p>
+        </div>
+        
+        <div class="ranking-list" *ngIf="losers.length > 0">
+          <div class="rank-item" *ngFor="let stat of losers; let i = index">
+            <div class="rank-position">
+              <span class="position-number loser">
+                {{ i + 1 }}
+              </span>
+            </div>
+            <img [src]="stat.user.picture" [alt]="stat.user.name" class="user-avatar">
+            <div class="user-info">
+              <span class="user-name">{{ stat.user.name }}</span>
+              <span class="user-stats">{{ stat.wins }} vitórias / {{ stat.losses }} derrotas</span>
+            </div>
+            <div class="stats-badges">
+              <div class="badge loss-badge">
+                <span class="badge-icon">❌</span>
+                <span>{{ stat.losses }}</span>
+              </div>
+              <div class="badge rate-badge">
+                <span class="badge-icon">📊</span>
+                <span>{{ stat.winRate }}%</span>
+              </div>
+              <div class="badge coins-badge negative">
+                <span class="badge-icon">🪙</span>
+                <span>{{ stat.balance }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="losers.length === 0">
+          <p>🎉 Ninguém perdeu apostas ainda!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Carregando ranking...</p>
+    </div>
+  </main>
+</div>

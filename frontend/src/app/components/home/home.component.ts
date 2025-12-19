@@ -51,4 +51,8 @@ export class HomeComponent implements OnInit {
     this.closeProfileMenu();
     this.router.navigate(['/laranjeiro']);
   }
+
+  viewRanking(): void {
+    this.router.navigate(['/ranking']);
+  }
 }

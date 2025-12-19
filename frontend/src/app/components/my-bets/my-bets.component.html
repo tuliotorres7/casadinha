@@ -86,11 +86,23 @@
                 </div>
               </div>
             </div>
+
+            <!-- Mostrar vencedor se a aposta foi finalizada -->
+            <div class="winner-section" *ngIf="bet.status === 'completed' && bet.winner">
+              <div class="winner-banner" [class.you-won]="isWinner(bet)" [class.you-lost]="!isWinner(bet)">
+                <span class="winner-icon">{{ isWinner(bet) ? '🏆' : '😢' }}</span>
+                <div class="winner-info">
+                  <span class="winner-label">{{ isWinner(bet) ? 'Você Venceu!' : 'Você Perdeu' }}</span>
+                  <span class="winner-name">Vencedor: {{ getWinnerName(bet) }}</span>
+                </div>
+                <span class="winner-coins">{{ isWinner(bet) ? '+' : '-' }}{{ bet.amount }} 🪙</span>
+              </div>
+            </div>
           </div>
 
           <div class="bet-actions" *ngIf="bet.status === 'pending' && !isCreator(bet)">
-            <button class="btn-accept">Aceitar</button>
-            <button class="btn-reject">Recusar</button>
+            <button class="btn-accept" (click)="acceptBet(bet.id)">Achei um besta pra pagar minha netflix</button>
+            <button class="btn-reject" (click)="rejectBet(bet.id)">Nao achei meu dinheiro no lixo</button>
           </div>
         </div>
       </div>

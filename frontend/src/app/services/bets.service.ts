@@ -57,4 +57,24 @@ export class BetsService {
       { headers: this.getHeaders() }
     );
   }
+
+  getRanking(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/ranking`, { headers: this.getHeaders() });
+  }
+
+  acceptBet(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/accept`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  rejectBet(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/reject`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
 }
