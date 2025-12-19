@@ -45,4 +45,16 @@ export class BetsService {
   getBetById(id: number): Observable<Bet> {
     return this.http.get<Bet>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
+
+  getBetsAsAvaliador(): Observable<Bet[]> {
+    return this.http.get<Bet[]>(`${this.apiUrl}/avaliador`, { headers: this.getHeaders() });
+  }
+
+  declareWinner(betId: number, winnerId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/winner`,
+      { winnerId },
+      { headers: this.getHeaders() }
+    );
+  }
 }

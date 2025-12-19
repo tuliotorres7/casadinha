@@ -9,6 +9,7 @@ import { AuthService, User } from '../../services/auth.service';
 })
 export class HomeComponent implements OnInit {
   user: User | null = null;
+  showProfileMenu: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -19,6 +20,14 @@ export class HomeComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.user = user;
     });
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+  }
+
+  closeProfileMenu(): void {
+    this.showProfileMenu = false;
   }
 
   logout(): void {
@@ -36,5 +45,10 @@ export class HomeComponent implements OnInit {
 
   viewMyBets(): void {
     this.router.navigate(['/my-bets']);
+  }
+
+  goToLaranjeiro(): void {
+    this.closeProfileMenu();
+    this.router.navigate(['/laranjeiro']);
   }
 }

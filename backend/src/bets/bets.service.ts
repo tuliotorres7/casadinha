@@ -89,4 +89,63 @@ export class BetsService {
 
         return bet;
     }
+
+    async findBetsAsAvaliador(avaliadorId: number): Promise<Bet[]> {
+        return this.betModel.findAll({
+            where: {
+                avaliadorId,
+            },
+            include: [
+                { model: User, as: 'creator' },
+                { model: User, as: 'opponent' },
+                { model: User, as: 'avaliador' },
+                { model: User, as: 'winner' },
+            ],
+            order: [['createdAt', 'DESC']],
+        });
+    }
+
+    async declareWinner(betId: number, winnerId: number, avaliadorId: number): Promise<Bet> {
+        const bet = await this.findBetById(betId);
+
+        // Verificar se o usuário é o avaliador
+        if (bet.avaliadorId !== avaliadorId) {
+            throw new BadRequestException('Apenas o avaliador pode declarar o vencedor');
+        }
+
+        // Verificar se a aposta está pendente
+        if (bet.status !== BetStatus.PENDING) {
+            throw new BadRequestException('Apenas apostas pendentes podem ter um vencedor declarado');
+        }
+
+        // Verificar se já tem vencedor
+        if (bet.winnerId) {
+            throw new BadRequestException('Esta aposta já tem um vencedor declarado');
+        }
+
+        // Verificar se o vencedor é válido
+        if (winnerId !== bet.creatorId && winnerId !== bet.opponentId) {
+            throw new BadRequestException('O vencedor deve ser o criador ou oponente da aposta');
+        }
+
+        // Buscar o vencedor e o perdedor
+        const winner = await this.userModel.findByPk(winnerId);
+        const loserId = winnerId === bet.creatorId ? bet.opponentId : bet.creatorId;
+        const loser = await this.userModel.findByPk(loserId);
+
+        if (!winner || !loser) {
+            throw new NotFoundException('Usuário não encontrado');
+        }
+
+        // Atualizar a aposta
+        bet.winnerId = winnerId;
+        bet.status = BetStatus.COMPLETED;
+        await bet.save();
+
+        // Transferir moedas: vencedor ganha o dobro do valor apostado
+        winner.coins += bet.amount * 2;
+        await winner.save();
+
+        return this.findBetById(betId);
+    }
 }

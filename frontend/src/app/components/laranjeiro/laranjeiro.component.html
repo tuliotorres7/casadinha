@@ -1,0 +1,97 @@
+<div class="laranjeiro-container">
+  <nav class="navbar">
+    <div class="nav-content">
+      <button class="back-btn" (click)="goBack()">
+        ← Voltar
+      </button>
+      <h1>🍊 Laranjeiro</h1>
+      <div class="badge">Avaliador Oficial</div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="intro-section" *ngIf="!loading">
+      <div class="intro-card">
+        <div class="intro-icon">⚖️</div>
+        <h2>Seja Justo, Seja o Laranja!</h2>
+        <p>Como laranja destas apostas, você tem o poder de decidir quem foi o vencedor.</p>
+        <p class="warning">⚠️ Sua decisão é final e não poderá ser alterada!</p>
+      </div>
+    </div>
+
+    <div class="bets-section" *ngIf="!loading">
+      <h3 class="section-title" *ngIf="bets.length > 0">
+        Apostas Aguardando Julgamento ({{ bets.length }})
+      </h3>
+
+      <div class="bets-list" *ngIf="bets.length > 0">
+        <div class="bet-card" *ngFor="let bet of bets">
+          <div class="bet-header">
+            <div class="bet-title">
+              <span class="bet-icon">🎲</span>
+              <h3>{{ bet.description }}</h3>
+            </div>
+            <div class="bet-value">
+              <span class="coin-icon">🪙</span>
+              {{ bet.amount }} moedas
+            </div>
+          </div>
+
+          <div class="bet-body">
+            <div class="players">
+              <div class="player-card creator">
+                <img [src]="bet.creator.picture" [alt]="bet.creator.name" class="player-avatar">
+                <div class="player-info">
+                  <span class="player-label">Criador</span>
+                  <span class="player-name">{{ bet.creator.name }}</span>
+                  <span class="player-email">{{ bet.creator.email }}</span>
+                </div>
+                <button 
+                  class="btn-declare-winner" 
+                  (click)="declareWinner(bet.id, bet.creatorId)">
+                  👑 Declarar Vencedor
+                </button>
+              </div>
+
+              <div class="vs-divider">
+                <span>VS</span>
+              </div>
+
+              <div class="player-card opponent">
+                <img [src]="bet.opponent.picture" [alt]="bet.opponent.name" class="player-avatar">
+                <div class="player-info">
+                  <span class="player-label">Oponente</span>
+                  <span class="player-name">{{ bet.opponent.name }}</span>
+                  <span class="player-email">{{ bet.opponent.email }}</span>
+                </div>
+                <button 
+                  class="btn-declare-winner" 
+                  (click)="declareWinner(bet.id, bet.opponentId)">
+                  👑 Declarar Vencedor
+                </button>
+              </div>
+            </div>
+
+            <div class="bet-meta">
+              <span class="meta-item">
+                📅 Criada em: {{ bet.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="bets.length === 0">
+        <div class="empty-icon">🍊</div>
+        <h3>Nenhuma aposta para julgar</h3>
+        <p>No momento, não há apostas aceitas aguardando seu julgamento.</p>
+        <p class="sub-text">Quando houver apostas finalizadas, você será o juiz!</p>
+      </div>
+    </div>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Carregando apostas...</p>
+    </div>
+  </main>
+</div>

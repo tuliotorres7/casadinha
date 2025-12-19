@@ -9,9 +9,23 @@
           <span class="coin-icon">🪙</span>
           <span class="coin-amount">{{ user.coins }}</span>
         </div>
-        <img [src]="user.picture" [alt]="user.name" class="user-avatar">
-        <span class="user-name">{{ user.name }}</span>
-        <button class="logout-btn" (click)="logout()">Sair</button>
+        <div class="profile-container" (click)="toggleProfileMenu()">
+          <img [src]="user.picture" [alt]="user.name" class="user-avatar">
+          <span class="user-name">{{ user.name }}</span>
+          <span class="dropdown-arrow">▼</span>
+          
+          <div class="profile-menu" *ngIf="showProfileMenu" (click)="$event.stopPropagation()">
+            <div class="menu-item" (click)="goToLaranjeiro()">
+              <span class="menu-icon">🍊</span>
+              <span>Laranjeiro</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" (click)="logout()">
+              <span class="menu-icon">🚪</span>
+              <span>Sair</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </nav>

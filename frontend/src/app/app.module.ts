@@ -11,6 +11,7 @@ import { AuthCallbackComponent } from './components/auth-callback/auth-callback.
 import { CreateBetComponent } from './components/create-bet/create-bet.component';
 import { UsersListComponent } from './components/users-list/users-list.component';
 import { MyBetsComponent } from './components/my-bets/my-bets.component';
+import { LaranjeiroComponent } from './components/laranjeiro/laranjeiro.component';
 import { AuthGuard } from './guards/auth.guard';
 import { FilterPipe } from './pipes/filter.pipe';
 
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'create-bet', component: CreateBetComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersListComponent, canActivate: [AuthGuard] },
   { path: 'my-bets', component: MyBetsComponent, canActivate: [AuthGuard] },
+  { path: 'laranjeiro', component: LaranjeiroComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
@@ -33,6 +35,7 @@ const routes: Routes = [
     CreateBetComponent,
     UsersListComponent,
     MyBetsComponent,
+    LaranjeiroComponent,
     FilterPipe,
   ],
   imports: [
