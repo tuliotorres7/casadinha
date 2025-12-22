@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BetsService } from '../../services/bets.service';
 import { AuthService, User } from '../../services/auth.service';
 
@@ -23,11 +24,12 @@ interface BetWithUsers {
   templateUrl: './laranjeiro.component.html',
   styleUrls: ['./laranjeiro.component.css']
 })
-export class LaranjeiroComponent implements OnInit {
+export class LaranjeiroComponent implements OnInit, OnDestroy {
   bets: BetWithUsers[] = [];
   currentUser: User | null = null;
   loading: boolean = true;
   showProfileMenu: boolean = false;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private betsService: BetsService,
@@ -40,8 +42,12 @@ export class LaranjeiroComponent implements OnInit {
     this.loadBetsAsAvaliador();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   loadBetsAsAvaliador(): void {
-    this.betsService.getBetsAsAvaliador().subscribe({
+    const sub = this.betsService.getBetsAsAvaliador().subscribe({
       next: (bets: any) => {
         // Backend já retorna apenas apostas aceitas aguardando julgamento
         this.bets = bets;
@@ -50,9 +56,10 @@ export class LaranjeiroComponent implements OnInit {
       error: (error: any) => {
         console.error('Erro ao carregar apostas:', error);
         this.loading = false;
-        alert('Erro ao carregar apostas para julgar');
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   declareWinner(betId: number, winnerId: number): void {
@@ -60,16 +67,17 @@ export class LaranjeiroComponent implements OnInit {
       return;
     }
 
-    this.betsService.declareWinner(betId, winnerId).subscribe({
+    const sub = this.betsService.declareWinner(betId, winnerId).subscribe({
       next: () => {
         alert('Vencedor declarado com sucesso! 🍊');
         this.loadBetsAsAvaliador();
       },
       error: (error: any) => {
         console.error('Erro ao declarar vencedor:', error);
-        alert('Erro ao declarar vencedor: ' + (error.error?.message || 'Tente novamente'));
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   goBack(): void {
@@ -111,16 +119,17 @@ export class LaranjeiroComponent implements OnInit {
 
   rejectAsAvaliador(betId: number): void {
     if (confirm('Tem certeza que não quer ser o avaliador desta aposta? As moedas serão devolvidas aos participantes.')) {
-      this.betsService.rejectAsAvaliador(betId).subscribe({
+      const sub = this.betsService.rejectAsAvaliador(betId).subscribe({
         next: () => {
           alert('Você recusou avaliar esta aposta. As moedas foram devolvidas. 🍊');
           this.loadBetsAsAvaliador();
         },
         error: (error: any) => {
           console.error('Erro ao recusar avaliação:', error);
-          alert('Erro ao recusar avaliação: ' + (error.error?.message || 'Tente novamente'));
+          // Não mostra alert ao navegar para outra página
         }
       });
+      this.subscriptions.push(sub);
     }
   }
 }

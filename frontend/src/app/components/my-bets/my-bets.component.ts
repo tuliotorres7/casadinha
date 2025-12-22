@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { BetsService } from '../../services/bets.service';
 import { AuthService, User } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 interface BetWithUsers {
   id: number;
@@ -26,7 +27,7 @@ interface BetWithUsers {
   templateUrl: './my-bets.component.html',
   styleUrls: ['./my-bets.component.css']
 })
-export class MyBetsComponent implements OnInit {
+export class MyBetsComponent implements OnInit, OnDestroy {
   bets: BetWithUsers[] = [];
   filteredBets: BetWithUsers[] = [];
   currentUser: User | null = null;
@@ -36,6 +37,7 @@ export class MyBetsComponent implements OnInit {
   showAvaliadorModal: boolean = false;
   selectedBetForChange: BetWithUsers | null = null;
   availableUsers: User[] = [];
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private betsService: BetsService,
@@ -48,8 +50,12 @@ export class MyBetsComponent implements OnInit {
     this.loadBets();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   loadBets(): void {
-    this.betsService.getUserBets().subscribe({
+    const sub = this.betsService.getUserBets().subscribe({
       next: (bets: any) => {
         this.bets = bets;
         this.filteredBets = bets;
@@ -58,9 +64,10 @@ export class MyBetsComponent implements OnInit {
       error: (error: any) => {
         console.error('Erro ao carregar apostas:', error);
         this.loading = false;
-        alert('Erro ao carregar apostas');
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   filterByStatus(status: number | null): void {
@@ -173,31 +180,33 @@ export class MyBetsComponent implements OnInit {
 
   acceptBet(betId: number): void {
     if (confirm('Tem certeza que deseja aceitar esta aposta?')) {
-      this.betsService.acceptBet(betId).subscribe({
+      const sub = this.betsService.acceptBet(betId).subscribe({
         next: () => {
           alert('Aposta aceita com sucesso!');
           this.loadBets();
         },
         error: (error: any) => {
           console.error('Erro ao aceitar aposta:', error);
-          alert(error.error?.message || 'Erro ao aceitar aposta');
+          // Não mostra alert ao navegar para outra página
         }
       });
+      this.subscriptions.push(sub);
     }
   }
 
   rejectBet(betId: number): void {
     if (confirm('Tem certeza que deseja recusar esta aposta?')) {
-      this.betsService.rejectBet(betId).subscribe({
+      const sub = this.betsService.rejectBet(betId).subscribe({
         next: () => {
           alert('Aposta recusada. As moedas foram devolvidas ao criador.');
           this.loadBets();
         },
         error: (error: any) => {
           console.error('Erro ao recusar aposta:', error);
-          alert(error.error?.message || 'Erro ao recusar aposta');
+          // Não mostra alert ao navegar para outra página
         }
       });
+      this.subscriptions.push(sub);
     }
   }
 
@@ -219,7 +228,7 @@ export class MyBetsComponent implements OnInit {
   }
 
   loadAvailableUsers(bet: BetWithUsers): void {
-    this.authService.getAllUsers().subscribe({
+    const sub = this.authService.getAllUsers().subscribe({
       next: (users: User[]) => {
         // Filtrar para não incluir os apostadores
         this.availableUsers = users.filter(
@@ -228,15 +237,16 @@ export class MyBetsComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Erro ao carregar usuários:', error);
-        alert('Erro ao carregar usuários disponíveis');
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   changeAvaliador(newAvaliadorId: number): void {
     if (!this.selectedBetForChange) return;
 
-    this.betsService.changeAvaliador(this.selectedBetForChange.id, newAvaliadorId).subscribe({
+    const sub = this.betsService.changeAvaliador(this.selectedBetForChange.id, newAvaliadorId).subscribe({
       next: () => {
         alert('Solicitação de mudança de avaliador enviada! Aguardando aprovação do criador da aposta.');
         this.closeAvaliadorModal();
@@ -244,38 +254,41 @@ export class MyBetsComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Erro ao solicitar mudança de avaliador:', error);
-        alert(error.error?.message || 'Erro ao solicitar mudança de avaliador');
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   approveAvaliadorChange(betId: number): void {
     if (confirm('Deseja aprovar a mudança de avaliador?')) {
-      this.betsService.approveAvaliadorChange(betId).subscribe({
+      const sub = this.betsService.approveAvaliadorChange(betId).subscribe({
         next: () => {
           alert('Mudança de avaliador aprovada com sucesso!');
           this.loadBets();
         },
         error: (error: any) => {
           console.error('Erro ao aprovar mudança:', error);
-          alert(error.error?.message || 'Erro ao aprovar mudança de avaliador');
+          // Não mostra alert ao navegar para outra página
         }
       });
+      this.subscriptions.push(sub);
     }
   }
 
   rejectAvaliadorChange(betId: number): void {
     if (confirm('Deseja rejeitar a mudança de avaliador?')) {
-      this.betsService.rejectAvaliadorChange(betId).subscribe({
+      const sub = this.betsService.rejectAvaliadorChange(betId).subscribe({
         next: () => {
           alert('Mudança de avaliador rejeitada.');
           this.loadBets();
         },
         error: (error: any) => {
           console.error('Erro ao rejeitar mudança:', error);
-          alert(error.error?.message || 'Erro ao rejeitar mudança de avaliador');
+          // Não mostra alert ao navegar para outra página
         }
       });
+      this.subscriptions.push(sub);
     }
   }
 

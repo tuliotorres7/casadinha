@@ -1,51 +1,5 @@
 <div class="home-container">
-  <nav class="navbar">
-    <div class="nav-content">
-      <div class="logo">
-        <h1>🎲 Casadinha</h1>
-      </div>
-      <div class="user-info" *ngIf="user">
-        <div class="coins">
-          <span class="coin-icon">🪙</span>
-          <span class="coin-amount">{{ user.coins }}</span>
-        </div>
-        <div class="profile-container" (click)="toggleProfileMenu()">
-          <img [src]="user.picture" [alt]="user.name" class="user-avatar">
-          <span class="user-name">{{ user.name }}</span>
-          <span class="dropdown-arrow">▼</span>
-          
-          <div class="profile-menu" *ngIf="showProfileMenu" (click)="$event.stopPropagation()">
-            <div class="menu-item" (click)="goHome()">
-              <span class="menu-icon">🏠</span>
-              <span>Home</span>
-            </div>
-            <div class="menu-item" (click)="viewMyBets()">
-              <span class="menu-icon">🎯</span>
-              <span>Minhas Apostas</span>
-            </div>
-            <div class="menu-item" (click)="createBet()">
-              <span class="menu-icon">➕</span>
-              <span>Criar Aposta</span>
-            </div>
-            <div class="menu-item" (click)="viewUsers()">
-              <span class="menu-icon">👥</span>
-              <span>Jogue com Amigos</span>
-            </div>
-            <div class="menu-divider"></div>
-            <div class="menu-item" (click)="goToLaranjeiro()">
-              <span class="menu-icon">🍊</span>
-              <span>Laranjeiro</span>
-            </div>
-            <div class="menu-divider"></div>
-            <div class="menu-item" (click)="logout()">
-              <span class="menu-icon">🚪</span>
-              <span>Sair</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <app-header></app-header>
 
   <main class="main-content">
     <div class="welcome-section">

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BetsService } from '../../services/bets.service';
 import { AuthService, User } from '../../services/auth.service';
 
@@ -19,12 +20,13 @@ interface UserStats {
     templateUrl: './ranking.component.html',
     styleUrls: ['./ranking.component.css']
 })
-export class RankingComponent implements OnInit {
+export class RankingComponent implements OnInit, OnDestroy {
     winners: UserStats[] = [];
     losers: UserStats[] = [];
     loading: boolean = true;
     showProfileMenu: boolean = false;
     currentUser: User | null = null;
+    private subscriptions: Subscription[] = [];
 
     constructor(
         private betsService: BetsService,
@@ -37,8 +39,12 @@ export class RankingComponent implements OnInit {
         this.loadRanking();
     }
 
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
+    }
+
     loadRanking(): void {
-        this.betsService.getRanking().subscribe({
+        const sub = this.betsService.getRanking().subscribe({
             next: (data: any) => {
                 this.winners = data.winners || [];
                 this.losers = data.losers || [];
@@ -47,9 +53,10 @@ export class RankingComponent implements OnInit {
             error: (error: any) => {
                 console.error('Erro ao carregar ranking:', error);
                 this.loading = false;
-                alert('Erro ao carregar ranking');
+                // Não mostra alert ao navegar para outra página
             }
         });
+        this.subscriptions.push(sub);
     }
     goBack(): void {
         this.router.navigate(['/home']);

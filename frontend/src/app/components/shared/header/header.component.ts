@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService, User } from '../../services/auth.service';
+import { AuthService, User } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  user: User | null = null;
+export class HeaderComponent implements OnInit, OnDestroy {
+  currentUser: User | null = null;
   showProfileMenu: boolean = false;
   private subscriptions: Subscription[] = [];
 
@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const sub = this.authService.currentUser$.subscribe(user => {
-      this.user = user;
+      this.currentUser = user;
     });
     this.subscriptions.push(sub);
   }
@@ -33,45 +33,33 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showProfileMenu = !this.showProfileMenu;
   }
 
-  closeProfileMenu(): void {
+  goToHome(): void {
     this.showProfileMenu = false;
+    this.router.navigate(['/home']);
+  }
+
+  goToMyBets(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/my-bets']);
+  }
+
+  createBet(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/create-bet']);
+  }
+
+  goToUsers(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/users']);
+  }
+
+  goToLaranjeiro(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/laranjeiro']);
   }
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  createBet(): void {
-    this.closeProfileMenu();
-    this.router.navigate(['/create-bet']);
-  }
-
-  viewUsers(): void {
-    this.closeProfileMenu();
-    this.router.navigate(['/users']);
-  }
-
-  viewMyBets(): void {
-    this.closeProfileMenu();
-    this.router.navigate(['/my-bets']);
-  }
-
-  goToLaranjeiro(): void {
-    this.closeProfileMenu();
-    this.router.navigate(['/laranjeiro']);
-  }
-
-  viewRanking(): void {
-    this.router.navigate(['/ranking']);
-  }
-
-  closeProfileMenuOnAction(): void {
-    this.closeProfileMenu();
-  }
-
-  goHome(): void {
-    this.showProfileMenu = false;
-    // Já estamos na home, apenas fecha o menu
   }
 }

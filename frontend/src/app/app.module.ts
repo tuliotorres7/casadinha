@@ -13,6 +13,7 @@ import { UsersListComponent } from './components/users-list/users-list.component
 import { MyBetsComponent } from './components/my-bets/my-bets.component';
 import { LaranjeiroComponent } from './components/laranjeiro/laranjeiro.component';
 import { RankingComponent } from './components/ranking/ranking.component';
+import { HeaderComponent } from './components/shared/header/header.component';
 import { AuthGuard } from './guards/auth.guard';
 import { FilterPipe } from './pipes/filter.pipe';
 
@@ -39,6 +40,7 @@ const routes: Routes = [
     MyBetsComponent,
     LaranjeiroComponent,
     RankingComponent,
+    HeaderComponent,
     FilterPipe,
   ],
   imports: [

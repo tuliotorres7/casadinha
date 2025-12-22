@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService, User } from '../../services/auth.service';
 
 interface UsersResponse {
@@ -15,11 +16,12 @@ interface UsersResponse {
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.css']
 })
-export class UsersListComponent implements OnInit {
+export class UsersListComponent implements OnInit, OnDestroy {
   users: UsersResponse[] = [];
   currentUser: User | null = null;
   loading: boolean = true;
   showProfileMenu: boolean = false;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
@@ -31,8 +33,12 @@ export class UsersListComponent implements OnInit {
     this.loadUsers();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   loadUsers(): void {
-    this.authService.getAllUsers().subscribe({
+    const sub = this.authService.getAllUsers().subscribe({
       next: (users: UsersResponse[]) => {
         // Filtrar o usuário atual da lista
         this.users = users.filter(user => user.id !== this.currentUser?.id);
@@ -41,9 +47,10 @@ export class UsersListComponent implements OnInit {
       error: (error: any) => {
         console.error('Erro ao carregar usuários:', error);
         this.loading = false;
-        alert('Erro ao carregar usuários');
+        // Não mostra alert ao navegar para outra página
       }
     });
+    this.subscriptions.push(sub);
   }
 
   createBetWithUser(user: UsersResponse): void {
