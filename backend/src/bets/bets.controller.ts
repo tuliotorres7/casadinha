@@ -31,6 +31,11 @@ export class BetsController {
     return this.betsService.getRanking();
   }
 
+  @Get('public')
+  async getPublicBets() {
+    return this.betsService.getPublicBets();
+  }
+
   @Get(':id')
   async getBetById(@Param('id') id: string) {
     return this.betsService.findBetById(+id);
@@ -84,5 +89,11 @@ export class BetsController {
   async rejectAvaliadorChange(@Param('id') id: string, @Request() req) {
     const userId = req.user.id;
     return this.betsService.rejectAvaliadorChange(+id, userId);
+  }
+
+  @Patch(':id/accept-public')
+  async acceptPublicBet(@Param('id') id: string, @Request() req) {
+    const userId = req.user.id;
+    return this.betsService.acceptPublicBet(+id, userId);
   }
 }

@@ -53,12 +53,18 @@ export class Bet extends Model {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
+    allowNull: true,
   })
   opponentId: number;
 
   @BelongsTo(() => User, 'opponentId')
   opponent: User;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isPublic: boolean;
 
   @ForeignKey(() => User)
   @Column({
@@ -80,16 +86,6 @@ export class Bet extends Model {
 
   @BelongsTo(() => User, 'avaliadorId')
   avaliador: User;
-
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
-  })
-  proposedAvaliadorId: number;
-
-  @BelongsTo(() => User, 'proposedAvaliadorId')
-  proposedAvaliador: User;
 
   @CreatedAt
   createdAt: Date;

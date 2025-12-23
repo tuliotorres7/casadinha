@@ -14,7 +14,7 @@ export class BetsService {
     ) { }
 
     async createBet(creatorId: number, createBetDto: CreateBetDto): Promise<Bet> {
-        const { description, friendEmail, amount, avaliadorId } = createBetDto;
+        const { description, friendEmail, amount, avaliadorId, isPublic } = createBetDto;
 
         // Buscar o criador da aposta
         const creator = await this.userModel.findByPk(creatorId);
@@ -27,17 +27,28 @@ export class BetsService {
             throw new BadRequestException('Moedas insuficientes para criar esta aposta');
         }
 
-        // Buscar o oponente pelo email
-        const opponent = await this.userModel.findOne({
-            where: { email: friendEmail },
-        });
+        let opponentId = null;
 
-        if (!opponent) {
-            throw new NotFoundException('Amigo não encontrado com este email');
-        }
+        // Se não for aposta pública, buscar o oponente
+        if (!isPublic) {
+            if (!friendEmail) {
+                throw new BadRequestException('Email do oponente é obrigatório para apostas privadas');
+            }
 
-        if (opponent.id === creatorId) {
-            throw new BadRequestException('Você não pode apostar consigo mesmo');
+            // Buscar o oponente pelo email
+            const opponent = await this.userModel.findOne({
+                where: { email: friendEmail },
+            });
+
+            if (!opponent) {
+                throw new NotFoundException('Amigo não encontrado com este email');
+            }
+
+            if (opponent.id === creatorId) {
+                throw new BadRequestException('Você não pode apostar consigo mesmo');
+            }
+
+            opponentId = opponent.id;
         }
 
         // Definir o avaliador (padrão é ID 1 - o laranja)
@@ -48,9 +59,10 @@ export class BetsService {
             description,
             amount,
             creatorId,
-            opponentId: opponent.id,
+            opponentId,
             avaliadorId: finalAvaliadorId,
             status: BetStatus.PENDING,
+            isPublic: isPublic || false,
         });
 
         // Deduzir as moedas do criador
@@ -69,7 +81,6 @@ export class BetsService {
                 { model: User, as: 'creator' },
                 { model: User, as: 'opponent' },
                 { model: User, as: 'avaliador', required: false },
-                { model: User, as: 'proposedAvaliador', required: false },
                 { model: User, as: 'winner' },
             ],
             order: [['createdAt', 'DESC']],
@@ -93,7 +104,6 @@ export class BetsService {
                 { model: User, as: 'opponent' },
                 { model: User, as: 'winner' },
                 { model: User, as: 'avaliador', required: false },
-                { model: User, as: 'proposedAvaliador', required: false },
             ],
         });
 
@@ -313,8 +323,8 @@ export class BetsService {
             throw new BadRequestException('O avaliador não pode ser um dos apostadores');
         }
 
-        // Salvar o novo avaliador proposto e mudar status para CHANGE_AVALIADOR
-        bet.proposedAvaliadorId = newAvaliadorId;
+        // Trocar direto para o novo avaliador
+        bet.avaliadorId = newAvaliadorId;
         bet.status = BetStatus.CHANGE_AVALIADOR;
         await bet.save();
 
@@ -334,14 +344,7 @@ export class BetsService {
             throw new BadRequestException('Não há mudança de avaliador pendente para esta aposta');
         }
 
-        // Verificar se existe um avaliador proposto
-        if (!bet.proposedAvaliadorId) {
-            throw new BadRequestException('Nenhum avaliador proposto encontrado');
-        }
-
-        // Aprovar a mudança: atualizar avaliador e ir para ACCEPTED
-        bet.avaliadorId = bet.proposedAvaliadorId;
-        bet.proposedAvaliadorId = null;
+        // Aprovar a mudança: apenas mudar status para ACCEPTED
         bet.status = BetStatus.ACCEPTED;
         await bet.save();
 
@@ -367,12 +370,11 @@ export class BetsService {
             throw new NotFoundException('Criador não encontrado');
         }
 
-        // Devolver as moedas ao criador
+        // Devolver moedas ao criador
         creator.coins += bet.amount;
         await creator.save();
 
-        // Rejeitar a aposta: limpar avaliador proposto e ir para REJECTED
-        bet.proposedAvaliadorId = null;
+        // Rejeitar a aposta
         bet.status = BetStatus.REJECTED;
         await bet.save();
 
@@ -468,5 +470,80 @@ export class BetsService {
             winners,
             losers,
         };
+    }
+
+    async getPublicBets(): Promise<Bet[]> {
+        const bets = await this.betModel.findAll({
+            where: {
+                isPublic: true,
+                status: BetStatus.PENDING,
+                opponentId: null,
+            },
+            include: [
+                { model: User, as: 'creator', required: true, attributes: ['id', 'name', 'email', 'picture', 'coins'] },
+                { model: User, as: 'avaliador', required: false, attributes: ['id', 'name', 'email', 'picture', 'coins'] },
+            ],
+            order: [['createdAt', 'DESC']],
+            raw: false,
+            subQuery: false,
+        });
+
+        // Carregar avaliador padrão (ID 1) para apostas sem avaliador
+        const defaultAvaliador = await this.userModel.findByPk(1);
+        
+        return bets.map(bet => {
+            if (!bet.avaliador && defaultAvaliador) {
+                bet.avaliador = defaultAvaliador;
+            }
+            return bet;
+        });
+    }
+
+    async acceptPublicBet(betId: number, userId: number): Promise<Bet> {
+        const bet = await this.betModel.findByPk(betId, {
+            include: [
+                { model: User, as: 'creator' },
+            ],
+        });
+
+        if (!bet) {
+            throw new NotFoundException('Aposta não encontrada');
+        }
+
+        if (!bet.isPublic) {
+            throw new BadRequestException('Esta não é uma aposta pública');
+        }
+
+        if (bet.status !== BetStatus.PENDING) {
+            throw new BadRequestException('Esta aposta não está mais disponível');
+        }
+
+        if (bet.opponentId !== null) {
+            throw new BadRequestException('Esta aposta já tem um oponente');
+        }
+
+        if (bet.creatorId === userId) {
+            throw new BadRequestException('Você não pode aceitar sua própria aposta');
+        }
+
+        const user = await this.userModel.findByPk(userId);
+        if (!user) {
+            throw new NotFoundException('Usuário não encontrado');
+        }
+
+        if (user.coins < bet.amount) {
+            throw new BadRequestException('Moedas insuficientes para aceitar esta aposta');
+        }
+
+        // Deduzir moedas do oponente
+        user.coins -= bet.amount;
+        await user.save();
+
+        // Atualizar aposta com oponente e mudar status para aceita
+        bet.opponentId = userId;
+        bet.status = BetStatus.ACCEPTED;
+        await bet.save();
+
+        return await this.findBetById(betId);
     }
 }

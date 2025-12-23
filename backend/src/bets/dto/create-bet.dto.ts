@@ -1,11 +1,12 @@
-import { IsString, IsNumber, IsEmail, Min, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsEmail, Min, IsOptional, IsBoolean, ValidateIf } from 'class-validator';
 
 export class CreateBetDto {
   @IsString()
   description: string;
 
+  @ValidateIf(o => !o.isPublic)
   @IsEmail()
-  friendEmail: string;
+  friendEmail?: string;
 
   @IsNumber()
   @Min(1)
@@ -14,4 +15,8 @@ export class CreateBetDto {
   @IsOptional()
   @IsNumber()
   avaliadorId?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean;
 }

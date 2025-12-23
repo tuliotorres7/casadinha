@@ -3,9 +3,21 @@
 
   <main class="main-content">
   <div class="create-bet-card">
-    <h2>Nova Aposta</h2>
+    <h2>{{ isPublic ? 'Nova Aposta Pública' : 'Nova Aposta' }}</h2>
     
     <form (ngSubmit)="createBet()">
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="isPublic"
+            name="isPublic">
+          <span class="checkbox-text">
+            🌍 Criar como aposta pública (qualquer um pode aceitar)
+          </span>
+        </label>
+      </div>
+
       <div class="form-group">
         <label for="description">Descrição da Aposta</label>
         <textarea 
@@ -18,7 +30,7 @@
         </textarea>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="!isPublic">
         <label for="friendEmail">Email do Amigo</label>
         <input 
           type="email" 
@@ -26,7 +38,14 @@
           [(ngModel)]="friendEmail"
           name="friendEmail"
           placeholder="amigo@exemplo.com"
-          required>
+          [required]="!isPublic">
+      </div>
+
+      <div class="form-group" *ngIf="isPublic">
+        <div class="public-info">
+          <span class="public-icon">🌍</span>
+          <p><strong>Aposta Pública:</strong> Qualquer usuário poderá aceitar seu desafio!</p>
+        </div>
       </div>
 
       <div class="form-group">

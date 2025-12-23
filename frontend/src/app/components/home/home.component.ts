@@ -66,6 +66,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ranking']);
   }
 
+  viewPublicBets(): void {
+    this.router.navigate(['/public-bets']);
+  }
+
   closeProfileMenuOnAction(): void {
     this.closeProfileMenu();
   }

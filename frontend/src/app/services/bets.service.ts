@@ -109,4 +109,19 @@ export class BetsService {
       { headers: this.getHeaders() }
     );
   }
+
+  getPublicBets(): Observable<Bet[]> {
+    return this.http.get<Bet[]>(
+      `${this.apiUrl}/public`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  acceptPublicBet(betId: number): Observable<Bet> {
+    return this.http.patch<Bet>(
+      `${this.apiUrl}/${betId}/accept-public`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
 }

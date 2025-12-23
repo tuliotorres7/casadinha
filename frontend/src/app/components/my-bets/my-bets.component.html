@@ -44,9 +44,12 @@
       <div class="bets-list" *ngIf="filteredBets.length > 0">
         <div class="bet-card" *ngFor="let bet of filteredBets">
           <div class="bet-header">
-            <span class="bet-role" [class.creator]="isCreator(bet)" [class.opponent]="!isCreator(bet)">
-              {{ isCreator(bet) ? 'Você criou' : 'Desafiado por' }}
-            </span>
+            <div class="header-left">
+              <span class="bet-role" [class.creator]="isCreator(bet)" [class.opponent]="!isCreator(bet)">
+                {{ isCreator(bet) ? 'Você criou' : 'Desafiado por' }}
+              </span>
+              <span class="public-badge" *ngIf="bet.isPublic">🌍 Pública</span>
+            </div>
             <span class="bet-status" [ngClass]="getStatusClass(bet.status)">
               {{ getStatusLabel(bet.status) }}
             </span>

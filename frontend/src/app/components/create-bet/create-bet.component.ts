@@ -16,6 +16,7 @@ export class CreateBetComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   currentUser: User | null = null;
   showProfileMenu: boolean = false;
+  isPublic: boolean = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -27,10 +28,13 @@ export class CreateBetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    // Pré-preencher email se vier da página de usuários
+    // Pré-preencher email se vier da página de usuários ou verificar se é aposta pública
     const sub = this.route.queryParams.subscribe(params => {
       if (params['friendEmail']) {
         this.friendEmail = params['friendEmail'];
+      }
+      if (params['isPublic'] === 'true') {
+        this.isPublic = true;
       }
     });
     this.subscriptions.push(sub);
@@ -41,26 +45,40 @@ export class CreateBetComponent implements OnInit, OnDestroy {
   }
 
   createBet() {
-    if (!this.betDescription || !this.friendEmail || !this.betAmount) {
-      alert('Por favor, preencha todos os campos!');
+    // Validação: se for pública, não precisa de email, se for privada precisa
+    if (!this.betDescription || !this.betAmount) {
+      alert('Por favor, preencha a descrição e o valor da aposta!');
+      return;
+    }
+
+    if (!this.isPublic && !this.friendEmail) {
+      alert('Por favor, informe o email do oponente ou marque como aposta pública!');
       return;
     }
 
     this.loading = true;
 
-    const betData = {
+    const betData: any = {
       description: this.betDescription,
-      friendEmail: this.friendEmail,
       amount: this.betAmount,
-      avaliadorId: 1 // ID do avaliador padrão
+      avaliadorId: 1, // ID do avaliador padrão
+      isPublic: this.isPublic
     };
+
+    // Só adiciona friendEmail se não for aposta pública
+    if (!this.isPublic) {
+      betData.friendEmail = this.friendEmail;
+    }
 
     const sub = this.betsService.createBet(betData).subscribe({
       next: (response: any) => {
         console.log('Aposta criada:', response);
-        alert('Aposta criada com sucesso!');
+        const message = this.isPublic 
+          ? 'Aposta pública criada com sucesso! Aguarde alguém aceitar o desafio! 🌍'
+          : 'Aposta criada com sucesso!';
+        alert(message);
         this.loading = false;
-        this.router.navigate(['/home']);
+        this.router.navigate([this.isPublic ? '/public-bets' : '/home']);
       },
       error: (error: any) => {
         console.error('Erro ao criar aposta:', error);

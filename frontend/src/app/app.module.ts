@@ -13,6 +13,7 @@ import { UsersListComponent } from './components/users-list/users-list.component
 import { MyBetsComponent } from './components/my-bets/my-bets.component';
 import { LaranjeiroComponent } from './components/laranjeiro/laranjeiro.component';
 import { RankingComponent } from './components/ranking/ranking.component';
+import { PublicBetsComponent } from './components/public-bets/public-bets.component';
 import { HeaderComponent } from './components/shared/header/header.component';
 import { AuthGuard } from './guards/auth.guard';
 import { FilterPipe } from './pipes/filter.pipe';
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'my-bets', component: MyBetsComponent, canActivate: [AuthGuard] },
   { path: 'laranjeiro', component: LaranjeiroComponent, canActivate: [AuthGuard] },
   { path: 'ranking', component: RankingComponent, canActivate: [AuthGuard] },
+  { path: 'public-bets', component: PublicBetsComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
@@ -40,6 +42,7 @@ const routes: Routes = [
     MyBetsComponent,
     LaranjeiroComponent,
     RankingComponent,
+    PublicBetsComponent,
     HeaderComponent,
     FilterPipe,
   ],

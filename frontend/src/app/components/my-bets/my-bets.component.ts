@@ -20,6 +20,7 @@ interface BetWithUsers {
   avaliadorId: number;
   proposedAvaliadorId?: number;
   winnerId?: number;
+  isPublic?: boolean;
 }
 
 @Component({
@@ -110,6 +111,10 @@ export class MyBetsComponent implements OnInit, OnDestroy {
   }
 
   getOpponentName(bet: BetWithUsers): string {
+    // Apostas públicas sem oponente ainda
+    if (!bet.opponent) {
+      return 'Aguardando algum mané aceitar';
+    }
     return this.isCreator(bet) ? bet.opponent.name : bet.creator.name;
   }
 

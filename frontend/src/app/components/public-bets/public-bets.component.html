@@ -1,0 +1,103 @@
+<div class="public-bets-container">
+  <app-header></app-header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <h1>🌍 Apostas Públicas</h1>
+      <p>Aceite desafios de outros usuários!</p>
+      <button class="btn-create-public" (click)="createPublicBet()">
+        ➕ Criar Aposta Pública
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Carregando apostas públicas...
+    </div>
+
+    <!-- Apostas Públicas Disponíveis -->
+    <section *ngIf="!loading" class="available-bets-section">
+      <h2 class="section-title">🎯 Apostas Disponíveis para Aceitar</h2>
+      
+      <div *ngIf="publicBets.length === 0" class="no-bets">
+        <div class="empty-icon">🎯</div>
+        <h3>Nenhuma aposta pública disponível</h3>
+        <p>Aguarde outros usuários criarem apostas públicas!</p>
+      </div>
+
+      <div class="bets-grid" *ngIf="publicBets.length > 0">
+        <div class="bet-card" *ngFor="let bet of publicBets">
+          <div class="bet-header">
+            <div class="creator-info">
+              <img [src]="bet.creator.picture" alt="{{ bet.creator.name }}" class="avatar">
+              <div>
+                <strong>{{ bet.creator.name }}</strong>
+              </div>
+            </div>
+            <div class="bet-amount">
+              <span class="coins-icon">🪙</span>
+              <span class="amount">{{ bet.amount }}</span>
+            </div>
+          </div>
+
+          <div class="bet-description">
+            <p>{{ bet.description }}</p>
+          </div>
+
+          <div class="bet-footer">
+            <div class="avaliador-info">
+              <span class="laranja-icon">🍊</span>
+              <span>Laranja: {{ bet.avaliador.name }}</span>
+            </div>
+            <button class="btn-accept" (click)="acceptPublicBet(bet.id)">
+              Achei um besta
+            </button>
+          </div>
+
+          <div class="bet-date">
+            Criada em {{ bet.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minhas Apostas Públicas -->
+    <section *ngIf="!loading && myPublicBets.length > 0" class="my-bets-section">
+      <h2 class="section-title">📢 Minhas Apostas Públicas Abertas</h2>
+      <div class="bets-grid">
+        <div class="bet-card my-bet-card" *ngFor="let bet of myPublicBets">
+          <div class="bet-header">
+            <div class="creator-info">
+              <img [src]="bet.creator.picture" alt="{{ bet.creator.name }}" class="avatar">
+              <div>
+                <strong>{{ bet.creator.name }}</strong>
+                <span class="badge-me">Você</span>
+              </div>
+            </div>
+            <div class="bet-amount">
+              <span class="coins-icon">🪙</span>
+              <span class="amount">{{ bet.amount }}</span>
+            </div>
+          </div>
+
+          <div class="bet-description">
+            <p>{{ bet.description }}</p>
+          </div>
+
+          <div class="bet-footer">
+            <div class="avaliador-info">
+              <span class="laranja-icon">🍊</span>
+              <span>Laranja: {{ bet.avaliador.name }}</span>
+            </div>
+            <div class="waiting-badge">
+              ⏳ Aguardando algum mané aceitar
+            </div>
+          </div>
+
+          <div class="bet-date">
+            Criada em {{ bet.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

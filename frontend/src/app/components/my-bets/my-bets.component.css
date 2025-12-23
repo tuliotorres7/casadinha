@@ -250,11 +250,31 @@
   border-bottom: 2px solid #f7fafc;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .bet-role {
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.5rem 1rem;
   border-radius: 20px;
+}
+
+.public-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .bet-role.creator {
