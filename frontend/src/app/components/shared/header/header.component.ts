@@ -48,6 +48,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/create-bet']);
   }
 
+  goToPublicBets(): void {
+    this.showProfileMenu = false;
+    this.router.navigate(['/public-bets']);
+  }
+
   goToUsers(): void {
     this.showProfileMenu = false;
     this.router.navigate(['/users']);

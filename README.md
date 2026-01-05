@@ -1,4 +1,4 @@
-# 🎲 Casadinha - Site de Apostas Amigável
+🐯 Casadinha - Site de Apostas Amigável
 
 Bem-vindo ao **Casadinha**! Um site divertido de apostas que não valem dinheiro real, perfeito para se divertir com amigos sem riscos.
 
